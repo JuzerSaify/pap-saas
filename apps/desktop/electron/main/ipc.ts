@@ -220,7 +220,7 @@ export function registerIpcHandlers() {
         redirect: 'follow'
       })
 
-      request.setRequestHeader('User-Agent', 'PAPSoft-ERP-Updater')
+      request.setHeader('User-Agent', 'PAPSoft-ERP-Updater')
 
       request.on('response', (response) => {
         if (response.statusCode !== 200) {
