@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow, app } from 'electron'
+import { ipcMain, BrowserWindow, app, net } from 'electron'
 import { auth } from '@papsoft/auth'
 import { getDb } from './database/setup.js'
 import { SyncManager } from '@papsoft/sync'
@@ -214,54 +214,51 @@ export function registerIpcHandlers() {
 
       const file = fs.createWriteStream(filePath)
 
-      const downloadFile = (downloadUrl: string) => {
-        https.get(downloadUrl, {
-          headers: {
-            'User-Agent': 'PAPSoft-ERP-Updater'
+      const request = net.request({
+        method: 'GET',
+        url: url,
+        redirect: 'follow'
+      })
+
+      request.setRequestHeader('User-Agent', 'PAPSoft-ERP-Updater')
+
+      request.on('response', (response) => {
+        if (response.statusCode !== 200) {
+          file.close()
+          reject(new Error(`Failed to download update, status: ${response.statusCode}`))
+          return
+        }
+
+        const totalBytes = parseInt(response.headers['content-length'] as string || '0', 10)
+        let downloadedBytes = 0
+
+        response.on('data', (chunk) => {
+          downloadedBytes += chunk.length
+          file.write(chunk)
+
+          if (totalBytes > 0) {
+            const progress = Math.round((downloadedBytes / totalBytes) * 100)
+            event.sender.send('app:update-progress', progress)
           }
-        }, (res) => {
-          if (res.statusCode === 302 || res.statusCode === 301) {
-            const redirectUrl = res.headers.location
-            if (redirectUrl) {
-              downloadUrl = redirectUrl
-              downloadFile(redirectUrl)
-              return
-            }
-          }
+        })
 
-          if (res.statusCode !== 200) {
-            reject(new Error(`Failed to download update, status: ${res.statusCode}`))
-            return
-          }
+        response.on('end', () => {
+          file.end()
+          resolve({ filePath })
+        })
 
-          const totalBytes = parseInt(res.headers['content-length'] || '0', 10)
-          let downloadedBytes = 0
-
-          res.on('data', (chunk) => {
-            downloadedBytes += chunk.length
-            file.write(chunk)
-
-            if (totalBytes > 0) {
-              const progress = Math.round((downloadedBytes / totalBytes) * 100)
-              event.sender.send('app:update-progress', progress)
-            }
-          })
-
-          res.on('end', () => {
-            file.end()
-            resolve({ filePath })
-          })
-
-          res.on('error', (err) => {
-            file.close()
-            reject(err)
-          })
-        }).on('error', (err) => {
+        response.on('error', (err) => {
+          file.close()
           reject(err)
         })
-      }
+      })
 
-      downloadFile(url)
+      request.on('error', (err) => {
+        file.close()
+        reject(err)
+      })
+
+      request.end()
     })
   })
 
