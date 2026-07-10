@@ -9,7 +9,7 @@ import { handleGoogleSignIn } from './oauth.js'
 import https from 'https'
 import fs from 'fs'
 import path from 'path'
-import { exec } from 'child_process'
+import { exec, spawn } from 'child_process'
 
 let downloadedFilePath = ''
 
@@ -264,11 +264,11 @@ export function registerIpcHandlers() {
 
   ipcMain.handle('app:install-update', () => {
     if (downloadedFilePath && fs.existsSync(downloadedFilePath)) {
-      exec(`"${downloadedFilePath}"`, (err) => {
-        if (err) {
-          console.error('Failed to run update installer:', err)
-        }
+      const child = spawn(downloadedFilePath, [], {
+        detached: true,
+        stdio: 'ignore'
       })
+      child.unref()
       app.quit()
     } else {
       throw new Error('No downloaded update installer found')

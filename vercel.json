@@ -1,0 +1,4 @@
+{
+  "buildCommand": "pnpm --filter @papsoft/website build",
+  "outputDirectory": "apps/website/.next"
+}

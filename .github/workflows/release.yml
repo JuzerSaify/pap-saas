@@ -42,6 +42,19 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --no-frozen-lockfile --ignore-scripts
 
+      - name: Update Package Version from Tag
+        shell: bash
+        run: |
+          TAG_VERSION=${{ github.ref_name }}
+          VERSION=${TAG_VERSION#v}
+          echo "Updating desktop package version to $VERSION"
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('apps/desktop/package.json', 'utf8'));
+            pkg.version = '$VERSION';
+            fs.writeFileSync('apps/desktop/package.json', JSON.stringify(pkg, null, 2) + '\n', 'utf8');
+          "
+
       - name: Build Packages & Desktop
         run: pnpm --filter @papsoft/desktop... build
 
