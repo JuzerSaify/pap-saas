@@ -43,7 +43,10 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Build Packages & Desktop
-        run: pnpm build
+        run: pnpm --filter @papsoft/desktop... build
+
+      - name: Install Native App Dependencies
+        run: pnpm --filter @papsoft/desktop exec electron-builder install-app-deps
 
       - name: Package Desktop Installer
         run: pnpm --filter @papsoft/desktop dist
