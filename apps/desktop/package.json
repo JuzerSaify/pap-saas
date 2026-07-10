@@ -1,0 +1,67 @@
+{
+  "name": "@papsoft/desktop",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./out/main/index.cjs",
+  "type": "module",
+  "scripts": {
+    "dev": "electron-vite dev --watch",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "typecheck": "tsc --noEmit",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.papsoft.erp",
+    "productName": "PAPSoft ERP",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "PAPSoft ERP"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ]
+  },
+  "dependencies": {
+    "@papsoft/auth": "workspace:*",
+    "@papsoft/config": "workspace:*",
+    "@papsoft/core": "workspace:*",
+    "@papsoft/database": "workspace:*",
+    "@papsoft/sync": "workspace:*",
+    "@papsoft/ui": "workspace:*",
+    "better-sqlite3": "^12.11.1",
+    "drizzle-orm": "^0.39.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router": "^7.1.1",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^33.2.1",
+    "electron-vite": "^2.3.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.3",
+    "vite": "^5.4.11"
+  }
+}

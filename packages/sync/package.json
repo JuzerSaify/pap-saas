@@ -1,0 +1,22 @@
+{
+  "name": "@papsoft/sync",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@papsoft/auth": "workspace:*",
+    "@papsoft/config": "workspace:*",
+    "@papsoft/core": "workspace:*",
+    "@papsoft/database": "workspace:*",
+    "drizzle-orm": "^0.39.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.3"
+  }
+}
