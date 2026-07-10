@@ -4,6 +4,10 @@
   "private": true,
   "main": "./out/main/index.cjs",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JuzerSaify/pap-saas.git"
+  },
   "scripts": {
     "dev": "electron-vite dev --watch",
     "build": "electron-vite build",
@@ -17,6 +21,11 @@
     "npmRebuild": false,
     "directories": {
       "output": "dist"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "JuzerSaify",
+      "repo": "pap-saas"
     },
     "win": {
       "target": [
