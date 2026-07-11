@@ -15,9 +15,7 @@ interface Props {
 }
 
 export function StockInward({ activeLocations, products }: Props) {
-  const [records, setRecords] = useState<StockInwardRecord[]>([
-    { id: 1, item: 'Kraft Board 180GSM', qty: '12.4 MT', location: 'Main Godown A', date: '2026-07-09' }
-  ])
+  const [records, setRecords] = useState<StockInwardRecord[]>([])
 
   const [item, setItem] = useState('')
   const [qty, setQty] = useState('')

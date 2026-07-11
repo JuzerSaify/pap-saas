@@ -5,9 +5,7 @@ interface InvoiceRecord { id: number; client: string; total: string; status: str
 interface Props { contacts: any[] }
 
 export function Invoice({ contacts }: Props) {
-  const [records, setRecords] = useState<InvoiceRecord[]>([
-    { id: 1, client: 'Anil Board Mills', total: '1,450.00', status: 'Pending', date: '2026-07-09' }
-  ])
+  const [records, setRecords] = useState<InvoiceRecord[]>([])
   const [client, setClient] = useState('')
   const [amount, setAmount] = useState('')
 
@@ -19,7 +17,7 @@ export function Invoice({ contacts }: Props) {
     setRecords(prev => [...prev, {
       id: Date.now(),
       client,
-      total: parseFloat(amount).toLocaleString('en-IN', { minimumFractionDigits: 2 }),
+      total: 'PKR ' + parseFloat(amount).toLocaleString('en-PK', { minimumFractionDigits: 2 }),
       status: 'Pending',
       date: new Date().toISOString().split('T')[0]
     }])

@@ -4,9 +4,7 @@ interface ReceiptRecord { id: number; party: string; amount: string; mode: strin
 interface Props { contacts: any[] }
 
 export function Receipt({ contacts }: Props) {
-  const [records, setRecords] = useState<ReceiptRecord[]>([
-    { id: 1, party: 'Anil Board Mills', amount: '500.00', mode: 'Bank Transfer', date: '2026-07-09' }
-  ])
+  const [records, setRecords] = useState<ReceiptRecord[]>([])
   const [party, setParty] = useState('')
   const [amount, setAmount] = useState('')
   const [mode, setMode] = useState('Bank Transfer')
@@ -18,7 +16,7 @@ export function Receipt({ contacts }: Props) {
     if (!party || !amount) return
     setRecords(prev => [...prev, {
       id: Date.now(), party,
-      amount: parseFloat(amount).toLocaleString('en-IN', { minimumFractionDigits: 2 }),
+      amount: 'PKR ' + parseFloat(amount).toLocaleString('en-PK', { minimumFractionDigits: 2 }),
       mode, date: new Date().toISOString().split('T')[0]
     }])
     setParty('')
@@ -45,7 +43,7 @@ export function Receipt({ contacts }: Props) {
           <label className="block text-[9px] font-bold text-[#71717a] mb-1 uppercase tracking-wider">Payment Method</label>
           <select value={mode} onChange={e => setMode(e.target.value)}
             className="w-full h-9 border border-[#e4e4e7] px-3 rounded-md text-xs bg-[#fafafa] focus:outline-none focus:border-[#09090b]">
-            <option value="Bank Transfer">Bank Transfer (HDFC A/c)</option>
+            <option value="Bank Transfer">Bank Transfer (Bank A/c)</option>
             <option value="Cheque">Cheque Deposit</option>
             <option value="Cash">Cash Ledger</option>
           </select>

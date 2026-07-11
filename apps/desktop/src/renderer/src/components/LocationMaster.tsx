@@ -79,7 +79,7 @@ export function LocationMaster({ locations, setLocations }: Props) {
           <input
             type="text"
             required
-            placeholder="e.g. Mumbai"
+            placeholder="e.g. Lahore"
             value={city}
             onChange={e => setCity(e.target.value)}
             className="w-full h-9 border border-[#e4e4e7] px-3 rounded-md text-xs focus:outline-none focus:border-[#09090b] bg-[#fafafa]"
@@ -90,7 +90,7 @@ export function LocationMaster({ locations, setLocations }: Props) {
           <input
             type="text"
             required
-            placeholder="e.g. +91 98765 43210"
+            placeholder="e.g. +92 300 1234567"
             value={phone}
             onChange={e => setPhone(e.target.value)}
             className="w-full h-9 border border-[#e4e4e7] px-3 rounded-md text-xs focus:outline-none focus:border-[#09090b] bg-[#fafafa]"

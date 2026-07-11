@@ -16,13 +16,10 @@ export function AgingReport() {
             </tr>
           </thead>
           <tbody className="divide-y divide-[#e4e4e7]">
-            <tr className="hover:bg-[#fafafa]">
-              <td className="p-3 font-semibold">Anil Board Mills</td>
-              <td className="p-3 text-[#09090b] font-medium">950.00</td>
-              <td className="p-3 text-[#71717a]">0.00</td>
-              <td className="p-3 text-[#71717a]">0.00</td>
-              <td className="p-3 text-[#71717a]">0.00</td>
-              <td className="p-3 font-bold text-red-600">950.00</td>
+            <tr>
+              <td colSpan={6} className="p-3 text-center text-[#71717a] py-6 font-medium">
+                No outstanding balances
+              </td>
             </tr>
           </tbody>
         </table>

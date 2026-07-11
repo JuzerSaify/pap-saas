@@ -74,15 +74,8 @@ export function App() {
   const [products, setProducts] = useState<any[]>([])
 
   // ── Master Lists (in-memory only) ───────────────────────────────────────────
-  const [locations, setLocations] = useState<LocationRecord[]>([
-    { id: 1, name: 'Main Godown A', city: 'Mumbai', phone: '+91 98200 12345', status: 'Active' },
-    { id: 2, name: 'Port Warehouse 2', city: 'Chennai', phone: '+91 44250 54321', status: 'Active' },
-    { id: 3, name: 'Factory Depot', city: 'Gujarat', phone: '+91 26522 98765', status: 'Active' }
-  ])
-  const [salesPersons, setSalesPersons] = useState<SalesPersonRecord[]>([
-    { id: 1, name: 'Rajesh Sharma', phone: '+91 98110 98765', status: 'Active' },
-    { id: 2, name: 'Amit Patel', phone: '+91 99220 54321', status: 'Active' }
-  ])
+  const [locations, setLocations] = useState<LocationRecord[]>([])
+  const [salesPersons, setSalesPersons] = useState<SalesPersonRecord[]>([])
 
   // ── Company Name for Settings ───────────────────────────────────────────────
   const [newCompanyName, setNewCompanyName] = useState('')

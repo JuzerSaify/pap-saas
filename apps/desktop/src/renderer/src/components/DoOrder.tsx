@@ -4,9 +4,7 @@ interface DORecord { id: number; client: string; vehicle: string; status: string
 interface Props { contacts: any[] }
 
 export function DoOrder({ contacts }: Props) {
-  const [records, setRecords] = useState<DORecord[]>([
-    { id: 1, client: 'Anil Board Mills', vehicle: 'MH-12-PQ-9876', status: 'Dispatched', date: '2026-07-09' }
-  ])
+  const [records, setRecords] = useState<DORecord[]>([])
   const [client, setClient] = useState('')
   const [vehicle, setVehicle] = useState('')
 
@@ -33,7 +31,7 @@ export function DoOrder({ contacts }: Props) {
         </div>
         <div className="flex-1 min-w-[180px]">
           <label className="block text-[9px] font-bold text-[#71717a] mb-1 uppercase tracking-wider">Truck Number</label>
-          <input type="text" required placeholder="e.g. MH-12-PQ-9876" value={vehicle} onChange={e => setVehicle(e.target.value)}
+          <input type="text" required placeholder="e.g. LET-12-9876" value={vehicle} onChange={e => setVehicle(e.target.value)}
             className="w-full h-9 border border-[#e4e4e7] px-3 rounded-md text-xs focus:outline-none focus:border-[#09090b] bg-[#fafafa]" />
         </div>
         <button type="submit" className="h-9 px-5 bg-[#54e0e7] text-[#09090b] font-bold text-xs rounded-md hover:bg-[#3cd5dc] transition-all cursor-pointer shadow-sm shrink-0">Issue DO</button>

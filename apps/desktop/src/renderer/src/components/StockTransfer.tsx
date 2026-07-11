@@ -16,9 +16,7 @@ interface Props {
 }
 
 export function StockTransfer({ activeLocations, products }: Props) {
-  const [records, setRecords] = useState<TransferRecord[]>([
-    { id: 1, item: 'Kraft Board 180GSM', qty: '5 MT', from: 'Main Godown A', to: 'Factory Depot', date: '2026-07-09' }
-  ])
+  const [records, setRecords] = useState<TransferRecord[]>([])
 
   const [item, setItem] = useState('')
   const [qty, setQty] = useState('')

@@ -1,11 +1,7 @@
 import React from 'react'
 
 export function InventoryReport() {
-  const staticData = [
-    { item: 'Kraft Board 180GSM', location: 'Main Godown A', stock: '7.4 MT' },
-    { item: 'Kraft Board 180GSM', location: 'Factory Depot', stock: '5.0 MT' },
-    { item: 'Duplex Board 230GSM', location: 'Port Warehouse 2', stock: '12.0 MT' },
-  ]
+  const staticData: any[] = []
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden space-y-4">
