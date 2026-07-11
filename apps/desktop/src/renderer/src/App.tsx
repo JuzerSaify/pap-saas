@@ -309,7 +309,7 @@ export function App() {
               />
             </div>
             {unlockError && <p className="text-xs text-red-500 font-semibold">{unlockError}</p>}
-            <button type="submit" className="w-full h-10 bg-[#09090b] text-[#fafafa] font-bold text-xs rounded-md hover:bg-[#27272a] transition-colors cursor-pointer flex items-center justify-center gap-2">
+            <button type="submit" className="w-full h-10 bg-[#54e0e7] text-[#09090b] font-bold text-xs rounded-md hover:bg-[#3cd5dc] transition-colors cursor-pointer flex items-center justify-center gap-2">
               <Unlock size={14} />
               Unlock Application
             </button>
@@ -347,7 +347,7 @@ export function App() {
                 className="w-full h-10 border border-[#e4e4e7] px-3 rounded-md text-sm bg-white focus:outline-none focus:border-[#09090b] transition-colors" />
             </div>
             {authError && <p className="text-xs text-red-500">{authError}</p>}
-            <button type="submit" className="w-full h-10 bg-[#09090b] text-[#fafafa] font-bold text-xs rounded-md hover:bg-[#27272a] transition-colors cursor-pointer">
+            <button type="submit" className="w-full h-10 bg-[#54e0e7] text-[#09090b] font-bold text-xs rounded-md hover:bg-[#3cd5dc] transition-colors cursor-pointer">
               {isSignUp ? 'Sign Up' : 'Sign In'}
             </button>
           </form>
@@ -397,9 +397,9 @@ export function App() {
     <div className="flex flex-col h-screen bg-white overflow-hidden select-none font-sans">
 
       {/* Title Bar */}
-      <header className="relative h-12 bg-white flex items-center justify-between px-4 z-40 select-none border-b border-[#fafafa]" style={{ WebkitAppRegion: 'drag' } as any}>
+      <header className="relative h-12 bg-white flex items-center justify-between pl-4 pr-0 z-40 select-none border-b border-[#fafafa]" style={{ WebkitAppRegion: 'drag' } as any}>
         <div className="flex items-center gap-2" style={{ WebkitAppRegion: 'no-drag' } as any}>
-          <Building2 size={15} className="text-[#09090b]" />
+          <img src="/favicon.png" alt="Logo" className="w-4 h-4 shrink-0" />
           <span className="font-bold text-[11px] tracking-widest uppercase text-[#09090b]">PAPSoft ERP</span>
           {company && (
             <span className="text-[9px] border border-[#e4e4e7] px-2 py-0.5 rounded-sm bg-[#fafafa] font-bold text-[#71717a] tracking-wider uppercase ml-1">
@@ -408,61 +408,54 @@ export function App() {
           )}
         </div>
 
-        <div className="flex items-center gap-2 h-full" style={{ WebkitAppRegion: 'no-drag' } as any}>
+        <div className="flex items-center gap-2.5 h-full" style={{ WebkitAppRegion: 'no-drag' } as any}>
           {/* Updater Status UI */}
           {updateStatus === 'available' && (
             <button
               onClick={startDownloadingUpdate}
-              className="h-8 px-3 flex items-center gap-1.5 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 hover:bg-amber-100 rounded-md transition-colors cursor-pointer"
+              className="h-8 px-3.5 flex items-center gap-2 text-[10px] font-bold text-[#1fa2a8] bg-[#54e0e7]/10 border border-[#54e0e7]/20 hover:bg-[#54e0e7]/20 rounded-full transition-all cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
             >
-              <RefreshCw size={10} className="animate-spin" />
-              Update Available (v{latestVersion}) — Install Now
+              <span className="w-1.5 h-1.5 bg-[#54e0e7] rounded-full animate-pulse" />
+              New Update v{latestVersion} Available
             </button>
           )}
 
           {updateStatus === 'downloading' && (
-            <div className="flex items-center gap-2 px-3 h-8 border border-blue-200 bg-blue-50 text-blue-700 rounded-md text-[10px] font-medium min-w-[140px]">
-              <span>Downloading: {updateProgress}%</span>
-              <div className="w-16 h-1.5 bg-blue-100 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500 transition-all duration-300" style={{ width: `${updateProgress}%` }} />
-              </div>
+            <div className="flex items-center gap-2 px-3.5 h-8 bg-[#54e0e7]/10 text-[#1fa2a8] border border-[#54e0e7]/20 rounded-full text-[10px] font-bold tracking-wide uppercase">
+              <span className="w-1.5 h-1.5 bg-[#54e0e7] rounded-full animate-ping" />
+              Downloading: {updateProgress}%
             </div>
           )}
 
           {updateStatus === 'ready' && (
             <button
               onClick={restartToInstallUpdate}
-              className="h-8 px-3 flex items-center gap-1.5 text-[10px] font-bold text-green-700 bg-green-50 border border-green-200 hover:bg-green-100 rounded-md transition-colors cursor-pointer animate-pulse"
+              className="h-8 px-3.5 flex items-center gap-2 text-[10px] font-bold text-green-700 bg-green-50 border border-green-200 hover:bg-green-100 rounded-full transition-all cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)] animate-pulse"
             >
-              <RefreshCw size={10} />
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
               Update Ready — Restart App
             </button>
           )}
 
           {appLockPassword && (
-            <Button onClick={() => setIsAppLocked(true)} variant="outline" size="sm"
-              className="h-8 px-2 flex items-center gap-1 text-[10px] text-[#71717a] border-[#e4e4e7] hover:text-[#09090b]" title="Lock Application Now">
-              <Lock size={10} />
+            <button onClick={() => setIsAppLocked(true)}
+              className="h-8 px-3 flex items-center gap-1.5 text-[10px] font-semibold text-[#71717a] border border-[#e4e4e7] hover:bg-[#fafafa] hover:text-[#09090b] rounded-md transition-colors cursor-pointer"
+              title="Lock Application Now">
+              <Lock size={11} />
               Lock App
-            </Button>
+            </button>
           )}
-          {company && (
-            <Button onClick={triggerSync} variant="outline" size="sm" disabled={isSyncing}
-              className="h-8 px-3 flex items-center gap-1.5 text-[10px] mr-1 font-semibold">
-              <RefreshCw size={10} className={isSyncing ? 'animate-spin' : ''} />
-              {isSyncing ? 'Syncing...' : 'Sync Cloud'}
-            </Button>
-          )}
+
 
           {/* Progress bar at the bottom of the header if downloading */}
           {updateStatus === 'downloading' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-100 overflow-hidden">
-              <div className="h-full bg-blue-500 transition-all duration-300" style={{ width: `${updateProgress}%` }} />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#54e0e7]/20 overflow-hidden">
+              <div className="h-full bg-[#54e0e7] transition-all duration-300" style={{ width: `${updateProgress}%` }} />
             </div>
           )}
 
           {/* Avatar dropdown */}
-          <div className="relative mr-2 flex items-center h-full">
+          <div className="relative mr-1.5 flex items-center h-full">
             <button onClick={() => setShowAvatarMenu(!showAvatarMenu)}
               className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer select-none transition-all active:scale-95">
               {renderAvatarGraphic('w-8 h-8')}
@@ -488,7 +481,7 @@ export function App() {
           </div>
 
           {/* WinUI Window Controls */}
-          <div className="flex items-center h-full border-l border-[#e4e4e7]">
+          <div className="flex items-center h-full">
             <button onClick={() => window.api.window.minimize()}
               className="w-[46px] h-full flex items-center justify-center text-[#09090b] hover:bg-[#f3f3f3] active:bg-[#eaeaea] transition-all duration-150 cursor-pointer">
               <svg width="10" height="1" viewBox="0 0 10 1" className="stroke-current"><line x1="0" y1="0.5" x2="10" y2="0.5" strokeWidth="1.2" /></svg>
@@ -498,7 +491,7 @@ export function App() {
               <svg width="10" height="10" viewBox="0 0 10 10" className="stroke-current fill-none"><rect x="0.5" y="0.5" width="9" height="9" strokeWidth="1.2" /></svg>
             </button>
             <button onClick={() => window.api.window.close()}
-              className="w-[46px] h-full flex items-center justify-center text-[#09090b] hover:bg-[#e81123] hover:text-white active:bg-[#f1707a] transition-all duration-150 cursor-pointer">
+              className="w-[46px] h-full flex items-center justify-center text-[#09090b] hover:bg-[#c42b1c] hover:text-white active:bg-[#c42b1c]/90 transition-all duration-150 cursor-pointer">
               <svg width="10" height="10" viewBox="0 0 10 10" className="stroke-current"><path d="M0 0L10 10M10 0L0 10" strokeWidth="1.2" /></svg>
             </button>
           </div>
@@ -506,15 +499,17 @@ export function App() {
       </header>
 
       {/* Body */}
-      <div className="flex flex-1 overflow-hidden p-3 gap-3 bg-white">
+      <div className="flex flex-1 overflow-hidden pl-3 pt-3 pb-0 pr-0 gap-3 bg-white">
 
         {/* Sidebar */}
-        <aside className="w-56 bg-transparent flex flex-col justify-between p-1 select-none overflow-y-auto shrink-0">
+        <aside className="w-56 bg-transparent flex flex-col justify-between p-1 select-none overflow-y-auto shrink-0 no-scrollbar">
           <div className="space-y-4">
             {/* Dashboard */}
             <button onClick={() => setActiveSubTab('dashboard')}
-              className={`w-full flex items-center gap-2.5 px-3 h-9 text-xs font-semibold rounded-md transition-all duration-150 cursor-pointer border ${
-                activeSubTab === 'dashboard' ? 'bg-[#fafafa] border-[#e4e4e7] text-[#09090b] font-bold shadow-[0_1px_2px_rgba(0,0,0,0.02)]' : 'text-[#52525b] border-transparent hover:bg-[#fafafa]/50 hover:text-[#09090b]'
+              className={`w-full flex items-center gap-2.5 h-9 text-xs font-semibold rounded-md transition-all duration-150 cursor-pointer border relative ${
+                activeSubTab === 'dashboard'
+                  ? 'bg-[#f3f3f3] border-transparent text-[#09090b] font-bold pl-4 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-full before:bg-[#54e0e7] shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                  : 'text-[#52525b] border-transparent hover:bg-[#f3f3f3]/60 hover:text-[#09090b]'
               }`}>
               <LayoutDashboard size={14} />
               Dashboard
@@ -535,8 +530,10 @@ export function App() {
                     ['salesperson', <Users size={12} />, 'Sales Person'],
                   ].map(([tab, icon, label]) => (
                     <button key={tab as string} onClick={() => setActiveSubTab(tab as SubTab)}
-                      className={`w-full flex items-center gap-2 px-2.5 py-2 text-[11px] font-medium rounded-md transition-colors cursor-pointer border ${
-                        activeSubTab === tab ? 'bg-[#fafafa] border-[#e4e4e7] text-[#09090b] font-bold shadow-[0_1px_2px_rgba(0,0,0,0.02)]' : 'text-[#52525b] border-transparent hover:bg-[#fafafa]/50 hover:text-[#09090b]'
+                      className={`w-full flex items-center gap-2 px-2.5 py-2 text-[11px] font-medium rounded-md transition-all duration-150 cursor-pointer border relative ${
+                        activeSubTab === tab
+                          ? 'bg-[#f3f3f3] border-transparent text-[#09090b] font-bold pl-3.5 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-full before:bg-[#54e0e7] shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                          : 'text-[#52525b] border-transparent hover:bg-[#f3f3f3]/60 hover:text-[#09090b]'
                       }`}>
                       {icon as React.ReactNode}
                       {label as string}
@@ -559,8 +556,10 @@ export function App() {
                     ['stocktransfer', <ArrowRightLeft size={12} />, 'Stock Transfer'],
                   ].map(([tab, icon, label]) => (
                     <button key={tab as string} onClick={() => setActiveSubTab(tab as SubTab)}
-                      className={`w-full flex items-center gap-2 px-2.5 py-2 text-[11px] font-medium rounded-md transition-colors cursor-pointer border ${
-                        activeSubTab === tab ? 'bg-[#fafafa] border-[#e4e4e7] text-[#09090b] font-bold shadow-[0_1px_2px_rgba(0,0,0,0.02)]' : 'text-[#52525b] border-transparent hover:bg-[#fafafa]/50 hover:text-[#09090b]'
+                      className={`w-full flex items-center gap-2 px-2.5 py-2 text-[11px] font-medium rounded-md transition-all duration-150 cursor-pointer border relative ${
+                        activeSubTab === tab
+                          ? 'bg-[#f3f3f3] border-transparent text-[#09090b] font-bold pl-3.5 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-full before:bg-[#54e0e7] shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                          : 'text-[#52525b] border-transparent hover:bg-[#f3f3f3]/60 hover:text-[#09090b]'
                       }`}>
                       {icon as React.ReactNode}
                       {label as string}
@@ -584,8 +583,10 @@ export function App() {
                     ['addabook', <BookOpen size={12} />, 'Adda Book'],
                   ].map(([tab, icon, label]) => (
                     <button key={tab as string} onClick={() => setActiveSubTab(tab as SubTab)}
-                      className={`w-full flex items-center gap-2 px-2.5 py-2 text-[11px] font-medium rounded-md transition-colors cursor-pointer border ${
-                        activeSubTab === tab ? 'bg-[#fafafa] border-[#e4e4e7] text-[#09090b] font-bold shadow-[0_1px_2px_rgba(0,0,0,0.02)]' : 'text-[#52525b] border-transparent hover:bg-[#fafafa]/50 hover:text-[#09090b]'
+                      className={`w-full flex items-center gap-2 px-2.5 py-2 text-[11px] font-medium rounded-md transition-all duration-150 cursor-pointer border relative ${
+                        activeSubTab === tab
+                          ? 'bg-[#f3f3f3] border-transparent text-[#09090b] font-bold pl-3.5 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-full before:bg-[#54e0e7] shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                          : 'text-[#52525b] border-transparent hover:bg-[#f3f3f3]/60 hover:text-[#09090b]'
                       }`}>
                       {icon as React.ReactNode}
                       {label as string}
@@ -608,8 +609,10 @@ export function App() {
                     ['payment', <DollarSign size={12} />, 'Payment'],
                   ].map(([tab, icon, label]) => (
                     <button key={tab as string} onClick={() => setActiveSubTab(tab as SubTab)}
-                      className={`w-full flex items-center gap-2 px-2.5 py-2 text-[11px] font-medium rounded-md transition-colors cursor-pointer border ${
-                        activeSubTab === tab ? 'bg-[#fafafa] border-[#e4e4e7] text-[#09090b] font-bold shadow-[0_1px_2px_rgba(0,0,0,0.02)]' : 'text-[#52525b] border-transparent hover:bg-[#fafafa]/50 hover:text-[#09090b]'
+                      className={`w-full flex items-center gap-2 px-2.5 py-2 text-[11px] font-medium rounded-md transition-all duration-150 cursor-pointer border relative ${
+                        activeSubTab === tab
+                          ? 'bg-[#f3f3f3] border-transparent text-[#09090b] font-bold pl-3.5 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-full before:bg-[#54e0e7] shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                          : 'text-[#52525b] border-transparent hover:bg-[#f3f3f3]/60 hover:text-[#09090b]'
                       }`}>
                       {icon as React.ReactNode}
                       {label as string}
@@ -633,8 +636,10 @@ export function App() {
                     ['margin', <LineChart size={12} />, 'Gross Margin'],
                   ].map(([tab, icon, label]) => (
                     <button key={tab as string} onClick={() => setActiveSubTab(tab as SubTab)}
-                      className={`w-full flex items-center gap-2 px-2.5 py-2 text-[11px] font-medium rounded-md transition-colors cursor-pointer border ${
-                        activeSubTab === tab ? 'bg-[#fafafa] border-[#e4e4e7] text-[#09090b] font-bold shadow-[0_1px_2px_rgba(0,0,0,0.02)]' : 'text-[#52525b] border-transparent hover:bg-[#fafafa]/50 hover:text-[#09090b]'
+                      className={`w-full flex items-center gap-2 px-2.5 py-2 text-[11px] font-medium rounded-md transition-all duration-150 cursor-pointer border relative ${
+                        activeSubTab === tab
+                          ? 'bg-[#f3f3f3] border-transparent text-[#09090b] font-bold pl-3.5 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-full before:bg-[#54e0e7] shadow-[0_1px_2px_rgba(0,0,0,0.02)]'
+                          : 'text-[#52525b] border-transparent hover:bg-[#f3f3f3]/60 hover:text-[#09090b]'
                       }`}>
                       {icon as React.ReactNode}
                       {label as string}
@@ -647,7 +652,7 @@ export function App() {
         </aside>
 
         {/* Main Panel */}
-        <main className="flex-1 bg-white border border-[#e4e4e7] rounded-xl flex flex-col overflow-hidden shadow-sm">
+        <main className="flex-1 bg-white border-l border-t border-[#e4e4e7] rounded-tl-xl flex flex-col overflow-hidden shadow-sm">
           {/* Panel Header */}
           <header className="h-14 border-b border-[#e4e4e7] bg-white flex items-center justify-between px-6 shrink-0">
             <h2 className="font-bold text-[#09090b] text-[11px] uppercase tracking-widest">
@@ -665,7 +670,7 @@ export function App() {
                   Please configure an active company profile in settings to initialize the local workspace.
                 </p>
                 <button onClick={() => setActiveSubTab('settings')}
-                  className="h-9 px-5 bg-[#09090b] text-[#fafafa] font-bold text-xs rounded-md hover:bg-[#27272a] transition-all cursor-pointer flex items-center justify-center mx-auto shadow-sm">
+                  className="h-9 px-5 bg-[#54e0e7] text-[#09090b] font-bold text-xs rounded-md hover:bg-[#3cd5dc] transition-all cursor-pointer flex items-center justify-center mx-auto shadow-sm">
                   Configure Settings
                 </button>
               </div>

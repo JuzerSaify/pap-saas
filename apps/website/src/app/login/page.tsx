@@ -70,7 +70,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-white text-[#09090b] flex flex-col justify-center items-center p-4">
       <div className="w-full max-w-sm border border-[#e4e4e7] p-8 rounded-sm bg-white">
         <div className="mb-6 text-center">
-          <h1 className="text-xl font-bold tracking-tight text-[#09090b]">PAPSoft Cloud</h1>
+          <h1 className="text-xl font-bold tracking-tight text-[#22b2ba]">PAPSoft Cloud</h1>
           <p className="text-xs text-[#71717a] mt-1">Management Portal and Registration</p>
         </div>
 
@@ -83,7 +83,7 @@ export default function LoginPage() {
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full h-10 border border-[#e4e4e7] px-3 rounded-sm text-sm focus:outline-none focus:border-[#09090b] transition-colors"
+                className="w-full h-10 border border-[#e4e4e7] px-3 rounded-sm text-sm focus:outline-none focus:border-[#22b2ba] transition-colors"
               />
             </div>
           )}
@@ -94,7 +94,7 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-10 border border-[#e4e4e7] px-3 rounded-sm text-sm focus:outline-none focus:border-[#09090b] transition-colors"
+              className="w-full h-10 border border-[#e4e4e7] px-3 rounded-sm text-sm focus:outline-none focus:border-[#22b2ba] transition-colors"
             />
           </div>
           <div>
@@ -104,7 +104,7 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-10 border border-[#e4e4e7] px-3 rounded-sm text-sm focus:outline-none focus:border-[#09090b] transition-colors"
+              className="w-full h-10 border border-[#e4e4e7] px-3 rounded-sm text-sm focus:outline-none focus:border-[#22b2ba] transition-colors"
             />
           </div>
 
@@ -114,7 +114,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full h-10 bg-[#09090b] text-[#fafafa] font-medium rounded-sm hover:bg-[#27272a] transition-colors cursor-pointer disabled:opacity-50"
+            className="w-full h-10 bg-[#54e0e7] text-[#09090b] font-medium rounded-sm hover:bg-[#3cd5dc] transition-colors cursor-pointer disabled:opacity-50"
           >
             {isLoading ? 'Processing...' : isSignUp ? 'Sign Up' : 'Sign In'}
           </button>
@@ -132,7 +132,7 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={handleGoogleSignIn}
-          className="w-full h-10 border border-[#e4e4e7] hover:bg-[#f4f4f5] text-[#09090b] font-medium rounded-sm transition-colors cursor-pointer flex items-center justify-center gap-2"
+          className="w-full h-10 border border-[#22b2ba] hover:bg-[#eafafa] text-[#22b2ba] font-medium rounded-sm transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -146,7 +146,7 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <button
             onClick={() => setIsSignUp(!isSignUp)}
-            className="text-xs text-[#71717a] hover:text-[#09090b] underline cursor-pointer"
+            className="text-xs text-[#71717a] hover:text-[#22b2ba] underline cursor-pointer"
           >
             {isSignUp ? 'Already have an account? Sign In' : 'Create new account'}
           </button>

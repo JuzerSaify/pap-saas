@@ -1,0 +1,33 @@
+# Ignore all dependency folders
+node_modules/
+**/node_modules/
+
+# Ignore development/build caches
+.next/
+.turbo/
+.vercel/
+**/build/
+**/dist/
+**/out/
+**/release/
+
+# Ignore system files and git
+.git/
+.github/
+.idea/
+.vscode/
+
+# Ignore big desktop application compilation outputs
+apps/desktop/out/
+apps/desktop/dist/
+apps/desktop/release/
+
+# Ignore binary installers
+*.exe
+*.dmg
+*.zip
+*.tar.gz
+*.asar
+*.msi
+*.deb
+*.rpm

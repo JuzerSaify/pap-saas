@@ -110,7 +110,7 @@ export function ItemMaster({ company, products, setProducts }: Props) {
         <div className="flex gap-2">
           {editId ? (
             <>
-              <button type="submit" className="h-9 px-5 bg-[#09090b] text-[#fafafa] font-bold text-xs rounded-md hover:bg-[#27272a] transition-all cursor-pointer shadow-sm shrink-0 animate-pulse">
+              <button type="submit" className="h-9 px-5 bg-[#54e0e7] text-[#09090b] font-bold text-xs rounded-md hover:bg-[#3cd5dc] transition-all cursor-pointer shadow-sm shrink-0 animate-pulse">
                 Save Changes
               </button>
               <button type="button" onClick={cancelEdit} className="h-9 px-4 bg-white text-[#71717a] border border-[#e4e4e7] font-semibold text-xs rounded-md hover:bg-[#f4f4f5] transition-all cursor-pointer">
@@ -118,7 +118,7 @@ export function ItemMaster({ company, products, setProducts }: Props) {
               </button>
             </>
           ) : (
-            <button type="submit" className="h-9 px-5 bg-[#09090b] text-[#fafafa] font-bold text-xs rounded-md hover:bg-[#27272a] transition-all cursor-pointer shadow-sm shrink-0">
+            <button type="submit" className="h-9 px-5 bg-[#54e0e7] text-[#09090b] font-bold text-xs rounded-md hover:bg-[#3cd5dc] transition-all cursor-pointer shadow-sm shrink-0">
               Create Item
             </button>
           )}

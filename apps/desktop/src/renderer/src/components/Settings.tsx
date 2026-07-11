@@ -83,7 +83,7 @@ export function Settings({
                 onChange={e => setCustomAvatarInput(e.target.value)}
                 className="flex-1 h-9 border border-[#e4e4e7] px-3 rounded-md text-xs focus:outline-none focus:border-[#09090b] bg-[#fafafa]"
               />
-              <button type="submit" className="h-9 px-4 bg-[#09090b] text-[#fafafa] font-bold text-xs rounded-md hover:bg-[#27272a] cursor-pointer">
+              <button type="submit" className="h-9 px-4 bg-[#54e0e7] text-[#09090b] font-bold text-xs rounded-md hover:bg-[#3cd5dc] cursor-pointer">
                 Save Avatar
               </button>
             </div>
@@ -131,7 +131,7 @@ export function Settings({
             <span className="text-[9px] font-bold uppercase tracking-wider text-[#71717a]">
               Workstation lock: {appLockPassword ? '🔴 Locked (Active)' : '🟢 Unlocked'}
             </span>
-            <button type="submit" className="h-9 px-5 bg-[#09090b] text-[#fafafa] font-bold text-xs rounded-md hover:bg-[#27272a] cursor-pointer shadow-sm">
+            <button type="submit" className="h-9 px-5 bg-[#54e0e7] text-[#09090b] font-bold text-xs rounded-md hover:bg-[#3cd5dc] cursor-pointer shadow-sm">
               Update Lock Password
             </button>
           </div>
@@ -159,7 +159,7 @@ export function Settings({
                 className="w-full h-9 border border-[#e4e4e7] px-3 rounded-md text-xs focus:outline-none focus:border-[#09090b] bg-[#fafafa]"
               />
             </div>
-            <button type="submit" className="w-full h-9 bg-[#09090b] text-[#fafafa] font-bold text-xs rounded-md hover:bg-[#27272a] cursor-pointer">
+            <button type="submit" className="w-full h-9 bg-[#54e0e7] text-[#09090b] font-bold text-xs rounded-md hover:bg-[#3cd5dc] cursor-pointer">
               Create Active Workspace
             </button>
           </form>

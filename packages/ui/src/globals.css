@@ -1,6 +1,17 @@
+@font-face {
+  font-family: "Sifonn-Pro";
+  src: url("https://db.onlinewebfonts.com/t/25c294f3631fb5a0c1ef659a85cabdcf.eot");
+  src: url("https://db.onlinewebfonts.com/t/25c294f3631fb5a0c1ef659a85cabdcf.eot?#iefix") format("embedded-opentype"),
+       url("https://db.onlinewebfonts.com/t/25c294f3631fb5a0c1ef659a85cabdcf.woff2") format("woff2"),
+       url("https://db.onlinewebfonts.com/t/25c294f3631fb5a0c1ef659a85cabdcf.woff") format("woff"),
+       url("https://db.onlinewebfonts.com/t/25c294f3631fb5a0c1ef659a85cabdcf.ttf") format("truetype"),
+       url("https://db.onlinewebfonts.com/t/25c294f3631fb5a0c1ef659a85cabdcf.svg#Sifonn-Pro") format("svg");
+}
+
 @import "tailwindcss";
 
 @theme {
+  --font-sans: "Sifonn-Pro", "Inter", system-ui, -apple-system, sans-serif;
   --color-border: #e4e4e7;
   --color-input: #e4e4e7;
   --color-ring: #09090b;
@@ -31,7 +42,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: "Sifonn-Pro", "Inter", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
   }
@@ -52,3 +63,12 @@
     background: #d4d4d8;
   }
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

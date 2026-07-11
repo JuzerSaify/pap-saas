@@ -36,7 +36,7 @@ export function DoOrder({ contacts }: Props) {
           <input type="text" required placeholder="e.g. MH-12-PQ-9876" value={vehicle} onChange={e => setVehicle(e.target.value)}
             className="w-full h-9 border border-[#e4e4e7] px-3 rounded-md text-xs focus:outline-none focus:border-[#09090b] bg-[#fafafa]" />
         </div>
-        <button type="submit" className="h-9 px-5 bg-[#09090b] text-[#fafafa] font-bold text-xs rounded-md hover:bg-[#27272a] transition-all cursor-pointer shadow-sm shrink-0">Issue DO</button>
+        <button type="submit" className="h-9 px-5 bg-[#54e0e7] text-[#09090b] font-bold text-xs rounded-md hover:bg-[#3cd5dc] transition-all cursor-pointer shadow-sm shrink-0">Issue DO</button>
       </form>
       <div className="flex-1 overflow-auto border border-[#e4e4e7] rounded-xl bg-white">
         <table className="w-full border-collapse text-left text-xs text-[#09090b]">

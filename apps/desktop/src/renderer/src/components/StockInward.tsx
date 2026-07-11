@@ -88,7 +88,7 @@ export function StockInward({ activeLocations, products }: Props) {
         </div>
         <button
           type="submit"
-          className="h-9 px-5 bg-[#09090b] text-[#fafafa] font-bold text-xs rounded-md hover:bg-[#27272a] transition-all cursor-pointer shadow-sm shrink-0"
+          className="h-9 px-5 bg-[#54e0e7] text-[#09090b] font-bold text-xs rounded-md hover:bg-[#3cd5dc] transition-all cursor-pointer shadow-sm shrink-0"
         >
           Record Stock In
         </button>

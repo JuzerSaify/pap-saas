@@ -8,6 +8,7 @@ function createWindow() {
     width: 1280,
     height: 800,
     frame: false,
+    icon: join(app.getAppPath(), 'out/renderer/favicon.png'),
     webPreferences: {
       preload: join(app.getAppPath(), 'out/preload/index.cjs'),
       contextIsolation: true,
