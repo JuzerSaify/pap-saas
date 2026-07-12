@@ -50,7 +50,14 @@ export default function DocsPage() {
     <div className="min-h-screen bg-white text-[#09090b] flex flex-col justify-between">
       {/* Header */}
       <header className="h-20 border-b border-[#e4e4e7] flex items-center justify-between px-8 w-full">
-        <a href="/" className="font-bold text-sm tracking-wider uppercase text-black">PAPSoft SaaS</a>
+        <a
+          href="/"
+          style={{ fontFamily: '"Sifonn", sans-serif', letterSpacing: '0.04em' }}
+          className="font-normal text-base text-black flex items-center gap-2"
+        >
+          PAPSoft
+          <span className="text-[10px] font-bold tracking-widest uppercase border border-black px-1.5 py-0.5 rounded-sm">Beta</span>
+        </a>
         <nav className="flex items-center gap-6">
           <a href="/docs" className="text-xs text-[#22b2ba] font-bold transition-colors">Documentation</a>
           <a href="/pricing" className="text-xs text-black font-bold hover:text-[#22b2ba] transition-colors">Pricing</a>

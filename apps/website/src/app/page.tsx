@@ -43,7 +43,13 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white text-[#09090b] flex flex-col justify-between">
       {/* Header Navigation */}
       <header className="h-20 bg-transparent flex items-center justify-between px-8 w-full z-10">
-        <span className="font-bold text-sm tracking-wider uppercase text-black">PAPSoft SaaS</span>
+        <span
+            style={{ fontFamily: '"Sifonn", sans-serif', letterSpacing: '0.04em' }}
+            className="font-normal text-base text-black flex items-center gap-2"
+          >
+            PAPSoft
+            <span className="text-[10px] font-bold tracking-widest uppercase border border-black px-1.5 py-0.5 rounded-sm" style={{ fontFamily: 'inherit', letterSpacing: '0.12em' }}>Beta</span>
+          </span>
         <nav className="flex items-center gap-6">
           <a href="/docs" className="text-xs text-black font-bold hover:opacity-75 transition-opacity">Documentation</a>
           <a href="/pricing" className="text-xs text-black font-bold hover:opacity-75 transition-opacity">Pricing</a>
@@ -78,6 +84,10 @@ export default function LandingPage() {
         <p className="text-sm text-[#71717a] mt-6 max-w-lg leading-relaxed font-medium">
           Modern manufacturing, trading, wholesale and distribution operating system. High-performance offline-first app that synchronizes perfectly with the cloud.
         </p>
+        <div className="mt-3 flex items-center justify-center gap-2">
+          <span className="text-[10px] font-bold tracking-widest uppercase border border-[#09090b] px-2 py-0.5 rounded-sm">Public Beta</span>
+          <span className="text-[10px] text-[#71717a]">Free during beta · No credit card required</span>
+        </div>
         <div className="mt-8 flex gap-3">
           <a
             href="https://github.com/JuzerSaify/pap-saas/releases"

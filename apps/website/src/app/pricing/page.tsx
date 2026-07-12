@@ -31,56 +31,22 @@ export default function PricingPage() {
     setSession(null)
   }
 
-  const plans = [
-    {
-      name: 'Starter',
-      price: '$99',
-      description: 'Ideal for local wholesale traders and small paper dealers.',
-      features: [
-        'Single company database',
-        'Up to 100 Products/Items',
-        'Offline-first SQLite storage',
-        'Standard cloud synchronization',
-        '1 Device active limit'
-      ]
-    },
-    {
-      name: 'Professional',
-      price: '$299',
-      description: 'Perfect for paper mills and medium manufacturing units.',
-      features: [
-        '3 Multi-tenant companies',
-        'Unlimited products & GSM options',
-        'Real-time sync to Supabase',
-        'Advanced paper master parameters (BF, ply, flute)',
-        'Up to 5 active devices',
-        'Priority email support'
-      ]
-    },
-    {
-      name: 'Enterprise',
-      price: 'Custom',
-      description: 'Tailored for large multi-site converters and global board distributors.',
-      features: [
-        'Unlimited company setups',
-        'Dedicated cloud Postgres database',
-        'Active-active custom replication',
-        'Custom ERP integrations (SAP, Tally)',
-        '24/7 Phone & developer support',
-        'SLA guaranteed sync uptime'
-      ]
-    }
-  ]
-
   return (
     <div className="min-h-screen bg-white text-[#09090b] flex flex-col justify-between">
       {/* Header */}
       <header className="h-20 border-b border-[#e4e4e7] flex items-center justify-between px-8 w-full">
-        <a href="/" className="font-bold text-sm tracking-wider uppercase text-black">PAPSoft SaaS</a>
+        <a
+          href="/"
+          style={{ fontFamily: '"Sifonn", sans-serif', letterSpacing: '0.04em' }}
+          className="font-normal text-base text-black flex items-center gap-2"
+        >
+          PAPSoft
+          <span className="text-[10px] font-bold tracking-widest uppercase border border-black px-1.5 py-0.5 rounded-sm">Beta</span>
+        </a>
         <nav className="flex items-center gap-6">
-          <a href="/docs" className="text-xs text-black font-bold hover:text-[#22b2ba] transition-colors">Documentation</a>
+          <a href="/docs" className="text-xs text-black font-bold hover:opacity-75 transition-opacity">Documentation</a>
           <a href="/pricing" className="text-xs text-[#22b2ba] font-bold transition-colors">Pricing</a>
-          
+
           {loading ? (
             <span className="text-xs text-black font-medium">Loading...</span>
           ) : session ? (
@@ -102,43 +68,30 @@ export default function PricingPage() {
         </nav>
       </header>
 
-      {/* Main Pricing Content */}
-      <main className="flex-1 max-w-5xl mx-auto px-8 py-16 w-full">
-        <div className="text-center mb-16">
-          <h1 className="text-3xl font-extrabold tracking-tight text-[#22b2ba] sm:text-4xl">Transparent, Scale-Friendly Pricing</h1>
-          <p className="text-sm text-[#71717a] mt-3">From independent converters to global paper distribution giants.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {plans.map((plan) => (
-            <div key={plan.name} className="border border-[#e4e4e7] p-8 rounded-sm bg-white flex flex-col justify-between">
-              <div>
-                <h3 className="text-lg font-bold text-[#22b2ba]">{plan.name}</h3>
-                <div className="mt-4 flex items-baseline">
-                  <span className="text-4xl font-extrabold tracking-tight text-[#09090b]">{plan.price}</span>
-                  {plan.price !== 'Custom' && <span className="ml-1 text-sm text-[#71717a]">/month</span>}
-                </div>
-                <p className="mt-4 text-xs text-[#71717a] leading-relaxed">{plan.description}</p>
-                <ul className="mt-6 space-y-3">
-                  {plan.features.map((feat) => (
-                    <li key={feat} className="text-xs text-[#09090b] flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-[#22b2ba] rounded-full"></span>
-                      {feat}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <button className="mt-8 w-full h-10 border border-[#22b2ba] text-[#22b2ba] text-xs font-semibold rounded-sm hover:bg-[#eafafa] transition-colors cursor-pointer">
-                Get Started
-              </button>
-            </div>
-          ))}
+      {/* Coming Soon */}
+      <main className="flex-1 flex flex-col items-center justify-center text-center px-8">
+        <p className="text-[10px] font-bold tracking-widest uppercase text-[#22b2ba] mb-6">Pricing</p>
+        <h1 className="text-4xl font-extrabold tracking-tight text-[#09090b] sm:text-5xl">
+          Coming Soon
+        </h1>
+        <p className="text-sm text-[#71717a] mt-4 max-w-md leading-relaxed">
+          We are still in <strong>public beta</strong>. Pricing plans will be announced once we exit beta. For now, all features are completely free.
+        </p>
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <span className="text-[10px] font-bold tracking-widest uppercase border border-[#09090b] px-3 py-1 rounded-sm">Free During Beta</span>
+          <a
+            href="/"
+            className="text-xs text-[#71717a] hover:text-[#09090b] transition-colors font-medium mt-2"
+          >
+            ← Back to Home
+          </a>
         </div>
       </main>
 
       {/* Footer */}
       <footer className="h-20 border-t border-[#e4e4e7] flex items-center justify-between px-8 w-full text-xs text-[#71717a]">
         <span>© {new Date().getFullYear()} PAPSoft. All rights reserved.</span>
+        <span>Public Beta — Features subject to change.</span>
       </footer>
     </div>
   )
