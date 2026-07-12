@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Pencil } from 'lucide-react'
+import { Pencil, Search } from 'lucide-react'
 
 interface Props {
   company: any
@@ -12,6 +12,12 @@ export function ItemMaster({ company, products, setProducts }: Props) {
   const [paperType, setPaperType] = useState('Art Card')
   const [uom, setUom] = useState('KGS')
   const [editId, setEditId] = useState<string | null>(null)
+  const [isSearching, setIsSearching] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -129,7 +135,29 @@ export function ItemMaster({ company, products, setProducts }: Props) {
         <table className="w-full border-collapse text-left text-xs text-[#09090b]">
           <thead className="bg-[#fafafa] border-b border-[#e4e4e7] font-semibold text-[#71717a] uppercase tracking-wider sticky top-0 z-10">
             <tr>
-              <th className="p-3">Item Name</th>
+              <th className="p-3 w-64 min-w-[200px]">
+                {isSearching ? (
+                  <div className="flex items-center gap-1.5 w-full">
+                    <input
+                      type="text"
+                      placeholder="Search Item..."
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      className="w-full max-w-[180px] h-7 px-2 border border-[#e4e4e7] rounded text-xs focus:outline-none focus:border-[#09090b] bg-white font-sans font-medium"
+                      autoFocus
+                      onClick={e => e.stopPropagation()}
+                    />
+                    <button onClick={(e) => { e.stopPropagation(); setIsSearching(false); setSearchQuery(''); }} className="text-[#71717a] hover:text-[#09090b] cursor-pointer text-xs">
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 cursor-pointer select-none hover:text-[#09090b] transition-colors" onClick={() => setIsSearching(true)}>
+                    <span>Item Name</span>
+                    <Search size={12} className="text-[#71717a]" />
+                  </div>
+                )}
+              </th>
               <th className="p-3">Type</th>
               <th className="p-3">UOM</th>
               <th className="p-3">Status</th>
@@ -139,7 +167,9 @@ export function ItemMaster({ company, products, setProducts }: Props) {
           <tbody className="divide-y divide-[#e4e4e7]">
             {products.length === 0 ? (
               <tr><td colSpan={5} className="p-3 text-center text-[#71717a] py-6 font-medium">No items registered in SQLite database</td></tr>
-            ) : products.map(p => (
+            ) : filteredProducts.length === 0 ? (
+              <tr><td colSpan={5} className="p-3 text-center text-[#71717a] py-6 font-medium">No matching items found</td></tr>
+            ) : filteredProducts.map(p => (
               <tr key={p.id} className="hover:bg-[#fafafa]">
                 <td className="p-3 font-semibold">{p.name}</td>
                 <td className="p-3 text-[#71717a] font-medium">{p.paperType || '-'}</td>

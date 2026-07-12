@@ -20,6 +20,22 @@ function createWindow() {
   // Set clean window headers (remove default menus for plain minimalist aesthetics)
   mainWindow.setMenuBarVisibility(false)
 
+  // Force all child popups to be frameless for custom title bars
+  mainWindow.webContents.setWindowOpenHandler((details) => {
+    return {
+      action: 'allow',
+      overrideBrowserWindowOptions: {
+        frame: false,
+        autoHideMenuBar: true,
+        webPreferences: {
+          preload: join(app.getAppPath(), 'out/preload/index.cjs'),
+          contextIsolation: true,
+          nodeIntegration: false
+        }
+      }
+    }
+  })
+
   if (process.env.NODE_ENV === 'development' || !app.isPackaged) {
     mainWindow.loadURL('http://localhost:5173')
     mainWindow.webContents.openDevTools({ mode: 'detach' })

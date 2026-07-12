@@ -18,7 +18,7 @@
   "build": {
     "appId": "com.papsoft.erp",
     "productName": "PAPSoft ERP",
-    "icon": "src/renderer/public/favicon.png",
+    "icon": "src/renderer/public/icon.ico",
     "npmRebuild": false,
     "directories": {
       "output": "dist"
@@ -29,7 +29,7 @@
       "repo": "pap-saas"
     },
     "win": {
-      "icon": "src/renderer/public/favicon.png",
+      "icon": "src/renderer/public/icon.ico",
       "target": [
         {
           "target": "nsis",

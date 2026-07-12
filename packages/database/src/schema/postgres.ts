@@ -201,6 +201,149 @@ export const salesOrderItems = pgTable('sales_order_items', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull()
 })
 
+export const locations = pgTable('locations', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  companyId: uuid('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  name: text('name').notNull(),
+  city: text('city'),
+  phone: text('phone'),
+  status: text('status'),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const salesPersons = pgTable('sales_persons', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  companyId: uuid('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  name: text('name').notNull(),
+  phone: text('phone'),
+  status: text('status'),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const stockInwards = pgTable('stock_inwards', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  companyId: uuid('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  date: text('date'),
+  accountName: text('account_name'),
+  narration: text('narration'),
+  items: jsonb('items'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const stockTransfers = pgTable('stock_transfers', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  companyId: uuid('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  date: text('date'),
+  narration: text('narration'),
+  items: jsonb('items'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const invoices = pgTable('invoices', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  companyId: uuid('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  date: text('date'),
+  accountName: text('account_name'),
+  narration: text('narration'),
+  items: jsonb('items'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const deliveryOrders = pgTable('delivery_orders', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  companyId: uuid('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  invoiceNo: text('invoice_no').notNull(),
+  date: text('date'),
+  accountName: text('account_name'),
+  vehicle: text('vehicle'),
+  narration: text('narration'),
+  items: jsonb('items'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const receipts = pgTable('receipts', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  companyId: uuid('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  date: text('date'),
+  accountName: text('account_name'),
+  narration: text('narration'),
+  amount: numeric('amount', { precision: 15, scale: 2 }).default('0'),
+  paymentMode: text('payment_mode'),
+  refNo: text('ref_no'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const payments = pgTable('payments', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  companyId: uuid('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  date: text('date'),
+  accountName: text('account_name'),
+  narration: text('narration'),
+  amount: numeric('amount', { precision: 15, scale: 2 }).default('0'),
+  paymentMode: text('payment_mode'),
+  refNo: text('ref_no'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const journalVouchers = pgTable('journal_vouchers', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  companyId: uuid('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  date: text('date'),
+  narration: text('narration'),
+  items: jsonb('items'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const staffUsers = pgTable('staff_users', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  companyId: uuid('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  name: text('name').notNull(),
+  username: text('username').notNull(),
+  pin: text('pin').notNull(),
+  role: text('role').notNull(),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  syncVersion: integer('sync_version').default(0)
+})
+
 export const changeTracking = pgTable('change_tracking', {
   id: uuid('id').defaultRandom().primaryKey(),
   tableName: text('table_name').notNull(),

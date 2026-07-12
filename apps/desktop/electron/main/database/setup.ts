@@ -17,6 +17,23 @@ export function initDatabase() {
   }
 
   const dbPath = path.join(dir, 'papsoft.db')
+
+  if (fs.existsSync(dbPath)) {
+    try {
+      const tempSqlite = new Database(dbPath)
+      const pragma = tempSqlite.pragma("table_info(locations)") as any[]
+      const hasCompanyId = pragma.some(col => col.name === 'company_id')
+      tempSqlite.close()
+
+      if (!hasCompanyId) {
+        console.log('Detected old SQLite database lacking company_id. Deleting to regenerate schema...')
+        fs.unlinkSync(dbPath)
+      }
+    } catch (err) {
+      console.error('Error checking local database schema info:', err)
+    }
+  }
+
   const sqlite = new Database(dbPath)
   
   // Enable Write-Ahead Logging (WAL) for high performance concurrent read/writes
@@ -229,7 +246,183 @@ export function initDatabase() {
       payload TEXT,
       created_at TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS locations (
+      id TEXT PRIMARY KEY,
+      company_id TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      city TEXT,
+      phone TEXT,
+      status TEXT,
+      is_active INTEGER DEFAULT 1,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      deleted_at TEXT,
+      sync_version INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS sales_persons (
+      id TEXT PRIMARY KEY,
+      company_id TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      phone TEXT,
+      status TEXT,
+      is_active INTEGER DEFAULT 1,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      deleted_at TEXT,
+      sync_version INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS stock_inwards (
+      id TEXT PRIMARY KEY,
+      company_id TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+      voucher_no TEXT NOT NULL,
+      date TEXT,
+      account_name TEXT,
+      narration TEXT,
+      items TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      deleted_at TEXT,
+      sync_version INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS stock_transfers (
+      id TEXT PRIMARY KEY,
+      company_id TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+      voucher_no TEXT NOT NULL,
+      date TEXT,
+      narration TEXT,
+      items TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      deleted_at TEXT,
+      sync_version INTEGER DEFAULT 0
+    );
   `)
+
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS invoices (
+      id TEXT PRIMARY KEY,
+      company_id TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+      voucher_no TEXT NOT NULL,
+      date TEXT,
+      account_name TEXT,
+      narration TEXT,
+      items TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      deleted_at TEXT,
+      sync_version INTEGER DEFAULT 0
+    );
+  `)
+
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS delivery_orders (
+      id TEXT PRIMARY KEY,
+      company_id TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+      voucher_no TEXT NOT NULL,
+      invoice_no TEXT NOT NULL,
+      date TEXT,
+      account_name TEXT,
+      vehicle TEXT,
+      narration TEXT,
+      items TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      deleted_at TEXT,
+      sync_version INTEGER DEFAULT 0
+    );
+  `)
+
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS receipts (
+      id TEXT PRIMARY KEY,
+      company_id TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+      voucher_no TEXT NOT NULL,
+      date TEXT,
+      account_name TEXT,
+      narration TEXT,
+      amount REAL DEFAULT 0,
+      payment_mode TEXT,
+      ref_no TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      deleted_at TEXT,
+      sync_version INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS payments (
+      id TEXT PRIMARY KEY,
+      company_id TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+      voucher_no TEXT NOT NULL,
+      date TEXT,
+      account_name TEXT,
+      narration TEXT,
+      amount REAL DEFAULT 0,
+      payment_mode TEXT,
+      ref_no TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      deleted_at TEXT,
+      sync_version INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS journal_vouchers (
+      id TEXT PRIMARY KEY,
+      company_id TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+      voucher_no TEXT NOT NULL,
+      date TEXT,
+      narration TEXT,
+      items TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      deleted_at TEXT,
+      sync_version INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS staff_users (
+      id TEXT PRIMARY KEY,
+      company_id TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      username TEXT NOT NULL,
+      pin TEXT NOT NULL,
+      role TEXT NOT NULL,
+      is_active INTEGER DEFAULT 1,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      deleted_at TEXT,
+      sync_version INTEGER DEFAULT 0
+    );
+  `)
+
+  // Seed default admin in staff_users if empty and a company exists
+  try {
+    const companiesRes = sqlite.prepare("SELECT id FROM companies LIMIT 1").all() as any[]
+    if (companiesRes.length > 0) {
+      const defaultCompanyId = companiesRes[0].id
+      const staffRes = sqlite.prepare("SELECT id FROM staff_users LIMIT 1").all() as any[]
+      if (staffRes.length === 0) {
+        sqlite.prepare(`
+          INSERT INTO staff_users (id, company_id, name, username, pin, role, is_active, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)
+        `).run(
+          'default-admin',
+          defaultCompanyId,
+          'Administrator',
+          'admin',
+          '1234',
+          'Admin',
+          new Date().toISOString(),
+          new Date().toISOString()
+        )
+        console.log('Seeded default local staff administrator.')
+      }
+    }
+  } catch (seedErr) {
+    console.error('Failed to seed default staff user:', seedErr)
+  }
 
   dbInstance = drizzle(sqlite, { schema: sqliteSchema })
   return dbInstance

@@ -209,3 +209,147 @@ export const syncQueue = sqliteTable('sync_queue', {
   payload: text('payload'), // serialized JSON of the record
   createdAt: text('created_at').notNull()
 })
+
+export const locations = sqliteTable('locations', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  name: text('name').notNull(),
+  city: text('city'),
+  phone: text('phone'),
+  status: text('status'),
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  deletedAt: text('deleted_at'),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const salesPersons = sqliteTable('sales_persons', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  name: text('name').notNull(),
+  phone: text('phone'),
+  status: text('status'),
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  deletedAt: text('deleted_at'),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const stockInwards = sqliteTable('stock_inwards', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  date: text('date'),
+  accountName: text('account_name'),
+  narration: text('narration'),
+  items: text('items'), // serialized JSON of InwardItem[]
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  deletedAt: text('deleted_at'),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const stockTransfers = sqliteTable('stock_transfers', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  date: text('date'),
+  narration: text('narration'),
+  items: text('items'), // serialized JSON of TransferItem[]
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  deletedAt: text('deleted_at'),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const invoices = sqliteTable('invoices', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  date: text('date'),
+  accountName: text('account_name'),
+  narration: text('narration'),
+  items: text('items'), // serialized JSON of InvoiceItem[]
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  deletedAt: text('deleted_at'),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const deliveryOrders = sqliteTable('delivery_orders', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  invoiceNo: text('invoice_no').notNull(),
+  date: text('date'),
+  accountName: text('account_name'),
+  vehicle: text('vehicle'),
+  narration: text('narration'),
+  items: text('items'), // serialized JSON of delivered items
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  deletedAt: text('deleted_at'),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const receipts = sqliteTable('receipts', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  date: text('date'),
+  accountName: text('account_name'),
+  narration: text('narration'),
+  amount: real('amount').default(0),
+  paymentMode: text('payment_mode'),
+  refNo: text('ref_no'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  deletedAt: text('deleted_at'),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const payments = sqliteTable('payments', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  date: text('date'),
+  accountName: text('account_name'),
+  narration: text('narration'),
+  amount: real('amount').default(0),
+  paymentMode: text('payment_mode'),
+  refNo: text('ref_no'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  deletedAt: text('deleted_at'),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const journalVouchers = sqliteTable('journal_vouchers', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  voucherNo: text('voucher_no').notNull(),
+  date: text('date'),
+  narration: text('narration'),
+  items: text('items'), // serialized JSON array
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  deletedAt: text('deleted_at'),
+  syncVersion: integer('sync_version').default(0)
+})
+
+export const staffUsers = sqliteTable('staff_users', {
+  id: text('id').primaryKey(),
+  companyId: text('company_id').references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  name: text('name').notNull(),
+  username: text('username').notNull(),
+  pin: text('pin').notNull(),
+  role: text('role').notNull(), // 'Admin' | 'Manager' | 'Sale Person' | 'Accountant'
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  deletedAt: text('deleted_at'),
+  syncVersion: integer('sync_version').default(0)
+})
+

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Pencil } from 'lucide-react'
+import { Pencil, Search } from 'lucide-react'
 import { HEAD_CLASSIFICATIONS, SalesPersonRecord } from './types'
 
 interface Props {
@@ -17,6 +17,12 @@ export function AccountMaster({ company, contacts, setContacts, activeSalesPerso
   const [openingBal, setOpeningBal] = useState('')
   const [balanceType, setBalanceType] = useState<'Dr' | 'Cr'>('Dr')
   const [editId, setEditId] = useState<string | null>(null)
+  const [isSearching, setIsSearching] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredContacts = contacts.filter(c =>
+    c.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   // Auto-update classification when head changes
   useEffect(() => {
@@ -24,19 +30,14 @@ export function AccountMaster({ company, contacts, setContacts, activeSalesPerso
     setContactType(defaultType)
   }, [contactHead])
 
-  // Sync salesPerson default
-  useEffect(() => {
-    if (!salesPerson && activeSalesPersons.length > 0) {
-      setSalesPerson(activeSalesPersons[0].name)
-    }
-  }, [activeSalesPersons])
+  // Sync salesPerson default — intentionally NOT auto-defaulting; user can leave blank
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!company) return
     try {
       const notesJson = JSON.stringify({
-        salesPerson: salesPerson || activeSalesPersons[0]?.name || '',
+        salesPerson: salesPerson.trim() || '-',
         balanceType
       })
 
@@ -63,7 +64,7 @@ export function AccountMaster({ company, contacts, setContacts, activeSalesPerso
       }
 
       setContactName('')
-      setSalesPerson(activeSalesPersons[0]?.name || '')
+      setSalesPerson('')
       setOpeningBal('')
       setBalanceType('Dr')
     } catch (e) {
@@ -89,11 +90,11 @@ export function AccountMaster({ company, contacts, setContacts, activeSalesPerso
     try {
       if (c.notes) {
         const parsed = JSON.parse(c.notes)
-        setSalesPerson(parsed.salesPerson || activeSalesPersons[0]?.name || '')
+        setSalesPerson(parsed.salesPerson === '-' ? '' : (parsed.salesPerson || ''))
         setBalanceType(parsed.balanceType || 'Dr')
       }
     } catch {
-      setSalesPerson(activeSalesPersons[0]?.name || '')
+      setSalesPerson('')
       setBalanceType('Dr')
     }
   }
@@ -101,7 +102,7 @@ export function AccountMaster({ company, contacts, setContacts, activeSalesPerso
   const cancelEdit = () => {
     setEditId(null)
     setContactName('')
-    setSalesPerson(activeSalesPersons[0]?.name || '')
+    setSalesPerson('')
     setOpeningBal('')
     setBalanceType('Dr')
   }
@@ -163,6 +164,7 @@ export function AccountMaster({ company, contacts, setContacts, activeSalesPerso
             onChange={e => setSalesPerson(e.target.value)}
             className="w-full h-9 border border-[#e4e4e7] px-3 rounded-md text-xs bg-[#fafafa] focus:outline-none focus:border-[#09090b]"
           >
+            <option value="">— None —</option>
             {activeSalesPersons.map(sp => (
               <option key={sp.id} value={sp.name}>{sp.name}</option>
             ))}
@@ -215,7 +217,29 @@ export function AccountMaster({ company, contacts, setContacts, activeSalesPerso
         <table className="w-full border-collapse text-left text-xs text-[#09090b]">
           <thead className="bg-[#fafafa] border-b border-[#e4e4e7] font-semibold text-[#71717a] uppercase tracking-wider sticky top-0 z-10">
             <tr>
-              <th className="p-3">Account Name</th>
+              <th className="p-3 w-64 min-w-[200px]">
+                {isSearching ? (
+                  <div className="flex items-center gap-1.5 w-full">
+                    <input
+                      type="text"
+                      placeholder="Search Account..."
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      className="w-full max-w-[180px] h-7 px-2 border border-[#e4e4e7] rounded text-xs focus:outline-none focus:border-[#09090b] bg-white font-sans font-medium"
+                      autoFocus
+                      onClick={e => e.stopPropagation()}
+                    />
+                    <button onClick={(e) => { e.stopPropagation(); setIsSearching(false); setSearchQuery(''); }} className="text-[#71717a] hover:text-[#09090b] cursor-pointer text-xs">
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 cursor-pointer select-none hover:text-[#09090b] transition-colors" onClick={() => setIsSearching(true)}>
+                    <span>Account Name</span>
+                    <Search size={12} className="text-[#71717a]" />
+                  </div>
+                )}
+              </th>
               <th className="p-3">Head Group</th>
               <th className="p-3">Classification Type</th>
               <th className="p-3">Sales Person</th>
@@ -228,7 +252,9 @@ export function AccountMaster({ company, contacts, setContacts, activeSalesPerso
           <tbody className="divide-y divide-[#e4e4e7]">
             {contacts.length === 0 ? (
               <tr><td colSpan={8} className="p-3 text-center text-[#71717a] py-6 font-medium">No accounts configured</td></tr>
-            ) : contacts.map(c => {
+            ) : filteredContacts.length === 0 ? (
+              <tr><td colSpan={8} className="p-3 text-center text-[#71717a] py-6 font-medium">No matching accounts found</td></tr>
+            ) : filteredContacts.map(c => {
               let slsPerson = '-'
               let balType = 'Dr'
               try {
@@ -253,7 +279,7 @@ export function AccountMaster({ company, contacts, setContacts, activeSalesPerso
                   <td className="p-3 capitalize font-medium text-[#71717a]">{headGroup}</td>
                   <td className="p-3 text-[#71717a]">{c.type}</td>
                   <td className="p-3 font-medium text-[#71717a]">{slsPerson}</td>
-                  <td className="p-3 font-bold">{c.openingBalance || 0}</td>
+                  <td className="p-3 font-bold">{'PKR ' + parseFloat(c.openingBalance || 0).toLocaleString('en-PK', { maximumFractionDigits: 0 })}</td>
                   <td className="p-3 font-bold uppercase">{balType}</td>
                   <td className="p-3">
                     <button

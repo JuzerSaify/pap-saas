@@ -11,7 +11,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Sifonn-Pro", "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-sifonn: "Sifonn-Pro", "Inter", system-ui, -apple-system, sans-serif;
   --color-border: #e4e4e7;
   --color-input: #e4e4e7;
   --color-ring: #09090b;
@@ -42,9 +43,16 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: "Sifonn-Pro", "Inter", system-ui, -apple-system, sans-serif;
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
+  }
+
+  button,
+  label,
+  h1, h2, h3, h4, h5, h6,
+  .font-sifonn {
+    font-family: "Sifonn-Pro", "Inter", system-ui, -apple-system, sans-serif !important;
   }
 
   /* Custom minimalist scrollbars */

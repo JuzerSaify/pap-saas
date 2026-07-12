@@ -68,7 +68,8 @@ export default function LandingPage() {
             <span className="text-xs text-black font-medium">Loading...</span>
           ) : session ? (
             <div className="flex items-center gap-4">
-              <span className="text-xs text-black font-medium">Active: {session.user.email}</span>
+              <span className="text-xs text-[#71717a] font-medium">Active: {session.user.email}</span>
+              <a href="/dashboard" className="text-xs text-black font-bold hover:opacity-75 transition-opacity">Dashboard</a>
               <button
                 onClick={handleSignOut}
                 className="h-9 px-4 text-xs border border-black hover:bg-black/5 text-black font-bold rounded-sm transition-colors cursor-pointer"

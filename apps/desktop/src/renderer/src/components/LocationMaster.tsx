@@ -1,6 +1,24 @@
 import React, { useState } from 'react'
-import { Pencil } from 'lucide-react'
+import { Pencil, Search } from 'lucide-react'
 import { LocationRecord } from './types'
+
+const formatPhone = (val: string) => {
+  if (!val || val === '-') return '-'
+  const clean = val.replace(/\s+/g, '').replace(/-/g, '')
+  if (clean.startsWith('+92') && clean.length === 13) {
+    return `${clean.slice(0, 3)} ${clean.slice(3, 6)} ${clean.slice(6)}`
+  }
+  if (clean.startsWith('92') && clean.length === 12) {
+    return `+92 ${clean.slice(2, 5)} ${clean.slice(5)}`
+  }
+  if (clean.startsWith('03') && clean.length === 11) {
+    return `+92 ${clean.slice(1, 4)} ${clean.slice(4)}`
+  }
+  if (clean.length === 10 && clean.startsWith('3')) {
+    return `+92 ${clean.slice(0, 3)} ${clean.slice(3)}`
+  }
+  return val
+}
 
 interface Props {
   locations: LocationRecord[]
@@ -12,37 +30,47 @@ export function LocationMaster({ locations, setLocations }: Props) {
   const [city, setCity] = useState('')
   const [phone, setPhone] = useState('')
   const [editId, setEditId] = useState<number | null>(null)
+  const [isSearching, setIsSearching] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
-  const handleSave = (e: React.FormEvent) => {
+  const filteredLocations = locations.filter(loc =>
+    loc.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name.trim() || !city.trim() || !phone.trim()) return
+    if (!name.trim()) return
 
-    if (editId !== null) {
-      setLocations(prev => prev.map(loc =>
-        loc.id === editId
-          ? { id: editId, name: name.trim(), city: city.trim(), phone: phone.trim(), status: loc.status || 'Active' }
-          : loc
-      ))
-      setEditId(null)
-    } else {
-      setLocations(prev => [...prev, {
-        id: Date.now(),
-        name: name.trim(),
-        city: city.trim(),
-        phone: phone.trim(),
-        status: 'Active'
-      }])
+    const recordData = {
+      name: name.trim(),
+      city: city.trim() || '-',
+      phone: phone.trim() || '-',
+      status: 'Active'
+    }
+
+    try {
+      if (editId !== null) {
+        const updatedRecord = await window.api.db.update('locations', String(editId), recordData)
+        setLocations(prev => prev.map(loc => String(loc.id) === String(editId) ? { ...loc, ...updatedRecord } : loc))
+        setEditId(null)
+      } else {
+        const insertedRecord = await window.api.db.insert('locations', recordData)
+        setLocations(prev => [...prev, insertedRecord])
+      }
+    } catch (err) {
+      console.error('Failed to save location:', err)
+      alert('Failed to save location to database.')
     }
     setName('')
     setCity('')
     setPhone('')
   }
 
-  const startEdit = (loc: LocationRecord) => {
+  const startEdit = (loc: any) => {
     setEditId(loc.id)
     setName(loc.name)
-    setCity(loc.city)
-    setPhone(loc.phone)
+    setCity(loc.city === '-' ? '' : loc.city)
+    setPhone(loc.phone === '-' ? '' : loc.phone)
   }
 
   const cancelEdit = () => {
@@ -52,12 +80,16 @@ export function LocationMaster({ locations, setLocations }: Props) {
     setPhone('')
   }
 
-  const toggleStatus = (id: number) => {
-    setLocations(prev => prev.map(loc =>
-      loc.id === id
-        ? { ...loc, status: loc.status === 'Postponed' ? 'Active' : 'Postponed' }
-        : loc
-    ))
+  const toggleStatus = async (id: any) => {
+    try {
+      const loc = locations.find(l => String(l.id) === String(id))
+      if (!loc) return
+      const nextStatus = loc.status === 'Postponed' ? 'Active' : 'Postponed'
+      const updatedRecord = await window.api.db.update('locations', String(id), { status: nextStatus })
+      setLocations(prev => prev.map(l => String(l.id) === String(id) ? { ...l, ...updatedRecord } : l))
+    } catch (err) {
+      console.error('Failed to toggle status:', err)
+    }
   }
 
   return (
@@ -78,7 +110,6 @@ export function LocationMaster({ locations, setLocations }: Props) {
           <label className="block text-[9px] font-bold text-[#71717a] mb-1 uppercase tracking-wider">City</label>
           <input
             type="text"
-            required
             placeholder="e.g. Lahore"
             value={city}
             onChange={e => setCity(e.target.value)}
@@ -89,7 +120,6 @@ export function LocationMaster({ locations, setLocations }: Props) {
           <label className="block text-[9px] font-bold text-[#71717a] mb-1 uppercase tracking-wider">Phone Number</label>
           <input
             type="text"
-            required
             placeholder="e.g. +92 300 1234567"
             value={phone}
             onChange={e => setPhone(e.target.value)}
@@ -118,7 +148,29 @@ export function LocationMaster({ locations, setLocations }: Props) {
         <table className="w-full border-collapse text-left text-xs text-[#09090b]">
           <thead className="bg-[#fafafa] border-b border-[#e4e4e7] font-semibold text-[#71717a] uppercase tracking-wider sticky top-0 z-10">
             <tr>
-              <th className="p-3">Location Name</th>
+              <th className="p-3 w-64 min-w-[200px]">
+                {isSearching ? (
+                  <div className="flex items-center gap-1.5 w-full">
+                    <input
+                      type="text"
+                      placeholder="Search Location..."
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      className="w-full max-w-[180px] h-7 px-2 border border-[#e4e4e7] rounded text-xs focus:outline-none focus:border-[#09090b] bg-white font-sans font-medium"
+                      autoFocus
+                      onClick={e => e.stopPropagation()}
+                    />
+                    <button onClick={(e) => { e.stopPropagation(); setIsSearching(false); setSearchQuery(''); }} className="text-[#71717a] hover:text-[#09090b] cursor-pointer text-xs">
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 cursor-pointer select-none hover:text-[#09090b] transition-colors" onClick={() => setIsSearching(true)}>
+                    <span>Location Name</span>
+                    <Search size={12} className="text-[#71717a]" />
+                  </div>
+                )}
+              </th>
               <th className="p-3">City</th>
               <th className="p-3">Phone Number</th>
               <th className="p-3">Status</th>
@@ -128,11 +180,13 @@ export function LocationMaster({ locations, setLocations }: Props) {
           <tbody className="divide-y divide-[#e4e4e7]">
             {locations.length === 0 ? (
               <tr><td colSpan={5} className="p-3 text-center text-[#71717a] py-6 font-medium">No locations configured</td></tr>
-            ) : locations.map(loc => (
+            ) : filteredLocations.length === 0 ? (
+              <tr><td colSpan={5} className="p-3 text-center text-[#71717a] py-6 font-medium">No matching locations found</td></tr>
+            ) : filteredLocations.map(loc => (
               <tr key={loc.id} className="hover:bg-[#fafafa]">
                 <td className="p-3 font-semibold">{loc.name}</td>
                 <td className="p-3 text-[#71717a] font-medium">{loc.city}</td>
-                <td className="p-3 text-[#71717a]">{loc.phone}</td>
+                <td className="p-3 text-[#71717a]">{formatPhone(loc.phone)}</td>
                 <td className="p-3">
                   <button
                     type="button"

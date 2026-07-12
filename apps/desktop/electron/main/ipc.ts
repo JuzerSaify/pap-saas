@@ -12,6 +12,7 @@ import path from 'path'
 import { exec, spawn } from 'child_process'
 
 let downloadedFilePath = ''
+let activeDownloadPromise: Promise<{ filePath: string }> | null = null
 
 export function registerIpcHandlers() {
   // Window Control Handlers
@@ -198,7 +199,12 @@ export function registerIpcHandlers() {
   })
 
   ipcMain.handle('app:download-update', async (event, { url }) => {
-    return new Promise((resolve, reject) => {
+    if (activeDownloadPromise) {
+      console.log('Update download already in progress. Re-using active promise.')
+      return activeDownloadPromise
+    }
+
+    activeDownloadPromise = new Promise<{ filePath: string }>((resolve, reject) => {
       const tempDir = app.getPath('temp')
       const fileName = 'PAPSoft-Setup-Update.exe'
       const filePath = path.join(tempDir, fileName)
@@ -212,7 +218,20 @@ export function registerIpcHandlers() {
         }
       }
 
-      const file = fs.createWriteStream(filePath)
+      let file: fs.WriteStream
+      try {
+        file = fs.createWriteStream(filePath)
+        file.on('error', (err) => {
+          console.error('File write stream error:', err)
+          activeDownloadPromise = null
+          reject(err)
+        })
+      } catch (err) {
+        console.error('Failed to create file write stream:', err)
+        activeDownloadPromise = null
+        reject(err)
+        return
+      }
 
       const request = net.request({
         method: 'GET',
@@ -225,6 +244,7 @@ export function registerIpcHandlers() {
       request.on('response', (response) => {
         if (response.statusCode !== 200) {
           file.close()
+          activeDownloadPromise = null
           reject(new Error(`Failed to download update, status: ${response.statusCode}`))
           return
         }
@@ -234,7 +254,11 @@ export function registerIpcHandlers() {
 
         response.on('data', (chunk) => {
           downloadedBytes += chunk.length
-          file.write(chunk)
+          try {
+            file.write(chunk)
+          } catch (writeErr) {
+            console.error('Chunk write error:', writeErr)
+          }
 
           if (totalBytes > 0) {
             const progress = Math.round((downloadedBytes / totalBytes) * 100)
@@ -244,22 +268,27 @@ export function registerIpcHandlers() {
 
         response.on('end', () => {
           file.end()
+          activeDownloadPromise = null
           resolve({ filePath })
         })
 
         response.on('error', (err) => {
           file.close()
+          activeDownloadPromise = null
           reject(err)
         })
       })
 
       request.on('error', (err) => {
         file.close()
+        activeDownloadPromise = null
         reject(err)
       })
 
       request.end()
     })
+
+    return activeDownloadPromise
   })
 
   ipcMain.handle('app:install-update', () => {
@@ -269,7 +298,7 @@ export function registerIpcHandlers() {
         stdio: 'ignore'
       })
       child.unref()
-      app.quit()
+      app.exit(0)
     } else {
       throw new Error('No downloaded update installer found')
     }
