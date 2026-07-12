@@ -37,11 +37,22 @@ export default function PricingPage() {
       <header className="h-20 border-b border-[#e4e4e7] flex items-center justify-between px-8 w-full">
         <a
           href="/"
-          style={{ fontFamily: '"Sifonn", sans-serif', letterSpacing: '0.04em' }}
-          className="font-normal text-base text-black flex items-center gap-2"
+          style={{
+            fontFamily: '"Sifonn", sans-serif',
+            letterSpacing: '0.06em',
+            WebkitTextStroke: '0.6px #09090b',
+            fontSize: '1.15rem',
+          }}
+          className="text-black flex items-center gap-2.5 no-underline"
         >
           PAPSoft
-          <span className="text-[10px] font-bold tracking-widest uppercase border border-black px-1.5 py-0.5 rounded-sm">Beta</span>
+          <span style={{
+            WebkitTextStroke: '0px',
+            fontSize: '9px',
+            letterSpacing: '0.14em',
+          }} className="font-bold uppercase bg-[#09090b] text-white px-2 py-0.5 rounded-sm">
+            Beta
+          </span>
         </a>
         <nav className="flex items-center gap-6">
           <a href="/docs" className="text-xs text-black font-bold hover:opacity-75 transition-opacity">Documentation</a>
