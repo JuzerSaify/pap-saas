@@ -17,13 +17,13 @@ interface Company {
 }
 
 interface Member {
-  id: string // userCompanyRole id
-  userId: string
+  id: string          // user_company_roles.id
+  user_id: string     // snake_case — matches DB column
   role: string
-  isActive: boolean
+  is_active: boolean
   profile?: {
-    fullName: string
-    avatarUrl?: string
+    full_name: string
+    avatar_url?: string
     preferences?: any
   }
 }
@@ -34,21 +34,20 @@ export default function DashboardPage() {
   const [company, setCompany] = useState<Company | null>(null)
   const [roleInCompany, setRoleInCompany] = useState<string>('')
   const [members, setMembers] = useState<Member[]>([])
-  
+
   // Create Company form state
   const [companyName, setCompanyName] = useState('')
   const [creatingCompany, setCreatingCompany] = useState(false)
-  
+
   // Add Member form state
   const [newMemberName, setNewMemberName] = useState('')
   const [newMemberEmail, setNewMemberEmail] = useState('')
-  const [newMemberRole, setNewMemberRole] = useState('manager') // 'admin' | 'manager' | 'operator' | 'viewer'
+  const [newMemberRole, setNewMemberRole] = useState('manager')
   const [addingMember, setAddingMember] = useState(false)
-  
+
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
 
-  // Verify and fetch session on mount
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
@@ -77,18 +76,17 @@ export default function DashboardPage() {
     try {
       setLoading(true)
       setErrorMsg('')
-      
-      // 1. Fetch user's company role
+
+      // 1. Fetch user's active company role — use snake_case column names
       const { data: roles, error: rolesErr } = await supabase
         .from('user_company_roles')
         .select('*')
-        .eq('userId', currUser.id)
-        .eq('isActive', true)
-        
+        .eq('user_id', currUser.id)
+        .eq('is_active', true)
+
       if (rolesErr) throw rolesErr
-      
+
       if (!roles || roles.length === 0) {
-        // No company found
         setCompany(null)
         setLoading(false)
         return
@@ -101,48 +99,48 @@ export default function DashboardPage() {
       const { data: compData, error: compErr } = await supabase
         .from('companies')
         .select('*')
-        .eq('id', activeRole.companyId)
+        .eq('id', activeRole.company_id)
         .single()
 
       if (compErr) throw compErr
       setCompany(compData)
 
-      // 3. Fetch all members belonging to this company
+      // 3. Fetch all members of this company
       const { data: allRoles, error: allRolesErr } = await supabase
         .from('user_company_roles')
         .select('*')
-        .eq('companyId', activeRole.companyId)
+        .eq('company_id', activeRole.company_id)
 
       if (allRolesErr) throw allRolesErr
 
-      // 4. Fetch profiles for all mapped users to display their names
+      // 4. Fetch profiles for each member
       const memberList: Member[] = []
       for (const roleRow of (allRoles || [])) {
         const { data: profData } = await supabase
           .from('profiles')
           .select('*')
-          .eq('id', roleRow.userId)
+          .eq('id', roleRow.user_id)
           .single()
 
         memberList.push({
           id: roleRow.id,
-          userId: roleRow.userId,
+          user_id: roleRow.user_id,
           role: roleRow.role,
-          isActive: roleRow.isActive,
+          is_active: roleRow.is_active,
           profile: profData ? {
-            fullName: profData.fullName,
-            avatarUrl: profData.avatarUrl,
+            full_name: profData.full_name,
+            avatar_url: profData.avatar_url,
             preferences: profData.preferences
           } : {
-            fullName: 'Unknown Member'
+            full_name: 'Unknown Member'
           }
         })
       }
 
       setMembers(memberList)
     } catch (err: any) {
-      console.error('Error loading dashboard data:', err)
-      setErrorMsg(err.message || 'Error loading workspace profile details.')
+      console.error('Dashboard load error:', err)
+      setErrorMsg(err.message || 'Error loading workspace data.')
     } finally {
       setLoading(false)
     }
@@ -156,10 +154,10 @@ export default function DashboardPage() {
     setSuccessMsg('')
 
     try {
-      // 1. Insert profile if missing
+      // 1. Upsert profile if missing
       const { data: existingProfile } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id')
         .eq('id', session.user.id)
         .single()
 
@@ -168,8 +166,8 @@ export default function DashboardPage() {
           .from('profiles')
           .insert({
             id: session.user.id,
-            fullName: session.user.user_metadata?.full_name || session.user.email.split('@')[0],
-            avatarUrl: session.user.user_metadata?.avatar_url || ''
+            full_name: session.user.user_metadata?.full_name || session.user.email.split('@')[0],
+            avatar_url: session.user.user_metadata?.avatar_url || ''
           })
         if (profErr) throw profErr
       }
@@ -186,14 +184,14 @@ export default function DashboardPage() {
 
       if (compErr) throw compErr
 
-      // 3. Create owner role mapping
+      // 3. Create owner role mapping — snake_case column names
       const { error: roleErr } = await supabase
         .from('user_company_roles')
         .insert({
-          userId: session.user.id,
-          companyId: newComp.id,
+          user_id: session.user.id,
+          company_id: newComp.id,
           role: 'owner',
-          isActive: true
+          is_active: true
         })
 
       if (roleErr) throw roleErr
@@ -211,8 +209,7 @@ export default function DashboardPage() {
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!company || !newMemberName.trim() || !newMemberEmail.trim()) return
-    
-    // Strict verification: Only owners or admins can register users
+
     if (roleInCompany !== 'owner' && roleInCompany !== 'admin') {
       alert('Only Company Owners or Admins are authorized to register new members.')
       return
@@ -223,32 +220,32 @@ export default function DashboardPage() {
     setSuccessMsg('')
 
     try {
-      // 1. Create a placeholder profile using a generated UUID-like random identifier
+      // Create placeholder profile
       const generatedProfileId = 'user-' + Math.random().toString(36).substr(2, 9)
-      
+
       const { error: profErr } = await supabase
         .from('profiles')
         .insert({
           id: generatedProfileId,
-          fullName: newMemberName.trim(),
+          full_name: newMemberName.trim(),
           preferences: { email: newMemberEmail.trim().toLowerCase() }
         })
 
       if (profErr) throw profErr
 
-      // 2. Map this profile inside the company roles table
+      // Map into company — snake_case column names
       const { error: roleErr } = await supabase
         .from('user_company_roles')
         .insert({
-          userId: generatedProfileId,
-          companyId: company.id,
+          user_id: generatedProfileId,
+          company_id: company.id,
           role: newMemberRole,
-          isActive: true
+          is_active: true
         })
 
       if (roleErr) throw roleErr
 
-      setSuccessMsg(`Member "${newMemberName}" registered successfully as ${newMemberRole}!`)
+      setSuccessMsg(`Member "${newMemberName}" registered as ${newMemberRole}!`)
       setNewMemberName('')
       setNewMemberEmail('')
       setNewMemberRole('manager')
@@ -262,19 +259,18 @@ export default function DashboardPage() {
 
   const handleToggleMemberStatus = async (member: Member) => {
     if (roleInCompany !== 'owner' && roleInCompany !== 'admin') {
-      alert('Only Company Owners or Admins are authorized to modify member status.')
+      alert('Only Company Owners or Admins can modify member status.')
       return
     }
-    if (member.userId === session.user.id) {
+    if (member.user_id === session.user.id) {
       alert('You cannot disable your own active workspace session.')
       return
     }
 
     try {
-      const nextActive = !member.isActive
       const { error } = await supabase
         .from('user_company_roles')
-        .update({ isActive: nextActive })
+        .update({ is_active: !member.is_active })
         .eq('id', member.id)
 
       if (error) throw error
@@ -322,14 +318,14 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-neutral-800 font-sans flex flex-col select-none">
-      
+
       {/* Header bar */}
       <header className="h-16 bg-white border-b border-[#e4e4e7] px-8 flex items-center justify-between shadow-sm shrink-0">
         <div className="flex items-center gap-3">
           <a href="/" className="p-1 hover:bg-[#fafafa] rounded-sm transition-colors" title="Back to Home">
             <ArrowLeft className="w-4 h-4 text-[#71717a]" />
           </a>
-          <span className="font-extrabold text-xs uppercase tracking-widest text-[#22b2ba] font-sifonn">
+          <span className="font-extrabold text-xs uppercase tracking-widest text-[#22b2ba]">
             Cloud Workspace Dashboard
           </span>
         </div>
@@ -350,7 +346,7 @@ export default function DashboardPage() {
 
       {/* Main Body */}
       <main className="flex-1 max-w-6xl w-full mx-auto p-8 flex flex-col gap-8 overflow-y-auto">
-        
+
         {errorMsg && (
           <div className="p-3.5 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-sm">
             {errorMsg}
@@ -368,7 +364,7 @@ export default function DashboardPage() {
             <Building className="w-12 h-12 text-[#22b2ba] mx-auto mb-4" />
             <h2 className="text-lg font-bold text-black uppercase tracking-wider">Register Company Workspace</h2>
             <p className="text-xs text-[#71717a] mt-2 mb-6 leading-relaxed">
-              No active company workspace association found for this user account. Register your manufacturing, wholesale or distribution company profile to initialize.
+              No active company workspace found for this account. Register your manufacturing, wholesale or distribution company to initialize.
             </p>
             <form onSubmit={handleCreateCompany} className="space-y-4 text-left">
               <div>
@@ -394,7 +390,7 @@ export default function DashboardPage() {
         ) : (
           /* ACTIVE COMPANY VIEW */
           <div className="flex flex-col lg:flex-row gap-8">
-            
+
             {/* Left Column: Member List */}
             <div className="flex-1 flex flex-col gap-6">
               <div className="border border-[#e4e4e7] bg-white rounded-sm p-6 shadow-sm">
@@ -402,7 +398,7 @@ export default function DashboardPage() {
                   <div>
                     <h3 className="text-lg font-extrabold text-black">{company.name}</h3>
                     <p className="text-[10px] text-[#71717a] mt-0.5 font-bold uppercase tracking-wider">
-                      Workspace Members Directory — {members.length} Total
+                      Workspace Members — {members.length} Total
                     </p>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -418,7 +414,7 @@ export default function DashboardPage() {
                     <thead>
                       <tr className="border-b border-[#f4f4f5] text-[9px] font-bold text-[#71717a] uppercase tracking-wider">
                         <th className="py-2.5 font-bold">Full Name</th>
-                        <th className="py-2.5 font-bold">Role / Level</th>
+                        <th className="py-2.5 font-bold">Role</th>
                         <th className="py-2.5 font-bold">Status</th>
                         {(roleInCompany === 'owner' || roleInCompany === 'admin') && (
                           <th className="py-2.5 font-bold text-right">Actions</th>
@@ -429,7 +425,7 @@ export default function DashboardPage() {
                       {members.map(member => (
                         <tr key={member.id} className="hover:bg-[#fafafa]/50 transition-colors">
                           <td className="py-3 font-semibold text-black">
-                            {member.profile?.fullName}
+                            {member.profile?.full_name}
                             {member.profile?.preferences?.email && (
                               <span className="block text-[9px] text-[#a1a1aa] font-medium mt-0.5">
                                 {member.profile.preferences.email}
@@ -444,26 +440,26 @@ export default function DashboardPage() {
                           </td>
                           <td className="py-3">
                             <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
-                              member.isActive 
-                                ? 'bg-green-50 border border-green-200 text-green-700' 
+                              member.is_active
+                                ? 'bg-green-50 border border-green-200 text-green-700'
                                 : 'bg-red-50 border border-red-200 text-red-700'
                             }`}>
-                              <span className={`w-1 h-1 rounded-full ${member.isActive ? 'bg-green-500' : 'bg-red-500'}`} />
-                              {member.isActive ? 'Active' : 'Disabled'}
+                              <span className={`w-1 h-1 rounded-full ${member.is_active ? 'bg-green-500' : 'bg-red-500'}`} />
+                              {member.is_active ? 'Active' : 'Disabled'}
                             </span>
                           </td>
                           {(roleInCompany === 'owner' || roleInCompany === 'admin') && (
                             <td className="py-3 text-right">
                               <button
                                 onClick={() => handleToggleMemberStatus(member)}
-                                disabled={member.userId === session.user.id}
+                                disabled={member.user_id === session.user.id}
                                 className={`h-7 px-3 border border-[#e4e4e7] rounded-sm text-[10px] font-bold uppercase transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${
-                                  member.isActive
+                                  member.is_active
                                     ? 'hover:bg-red-50 hover:text-red-600 hover:border-red-200'
                                     : 'hover:bg-green-50 hover:text-green-600 hover:border-green-200'
                                 }`}
                               >
-                                {member.isActive ? 'Disable' : 'Enable'}
+                                {member.is_active ? 'Disable' : 'Enable'}
                               </button>
                             </td>
                           )}
@@ -479,7 +475,7 @@ export default function DashboardPage() {
             {(roleInCompany === 'owner' || roleInCompany === 'admin') && (
               <div className="w-full lg:w-80 shrink-0">
                 <div className="border border-[#e4e4e7] bg-white rounded-sm p-6 shadow-sm">
-                  <h4 className="text-xs font-bold text-black uppercase tracking-wider flex items-center gap-1.5 pb-3 border-b border-[#f4f4f5] font-sifonn">
+                  <h4 className="text-xs font-bold text-black uppercase tracking-wider flex items-center gap-1.5 pb-3 border-b border-[#f4f4f5]">
                     <UserPlus className="w-4 h-4 text-[#22b2ba]" />
                     Register New Member
                   </h4>
