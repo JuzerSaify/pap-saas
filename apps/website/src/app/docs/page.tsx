@@ -1,6 +1,36 @@
-import React from 'react'
+'use client'
+
+import React, { useEffect, useState } from 'react'
+import { createClient, Session } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  'https://adcxvmkzljfuvknmwbvy.supabase.co',
+  'sb_publishable_ks0CAyO_SD9EmCaDdhmZuw_OhvK9OFS'
+)
 
 export default function DocsPage() {
+  const [session, setSession] = useState<Session | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setLoading(false)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+      setLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    setSession(null)
+  }
+
   const sections = [
     {
       title: 'Introduction',
@@ -20,13 +50,29 @@ export default function DocsPage() {
     <div className="min-h-screen bg-white text-[#09090b] flex flex-col justify-between">
       {/* Header */}
       <header className="h-20 border-b border-[#e4e4e7] flex items-center justify-between px-8 w-full">
-        <a href="/" className="font-bold text-sm tracking-wider uppercase text-[#22b2ba]">PAPSoft SaaS</a>
+        <a href="/" className="font-bold text-sm tracking-wider uppercase text-black">PAPSoft SaaS</a>
         <nav className="flex items-center gap-6">
-          <a href="/docs" className="text-xs text-[#22b2ba] font-medium transition-colors">Documentation</a>
-          <a href="/pricing" className="text-xs text-[#71717a] hover:text-[#22b2ba] transition-colors">Pricing</a>
-          <a href="/login" className="h-9 px-4 text-xs bg-[#54e0e7] text-[#09090b] font-medium rounded-sm hover:bg-[#3cd5dc] transition-colors cursor-pointer flex items-center justify-center">
-            Portal Log In
-          </a>
+          <a href="/docs" className="text-xs text-[#22b2ba] font-bold transition-colors">Documentation</a>
+          <a href="/pricing" className="text-xs text-black font-bold hover:text-[#22b2ba] transition-colors">Pricing</a>
+          
+          {loading ? (
+            <span className="text-xs text-black font-medium">Loading...</span>
+          ) : session ? (
+            <div className="flex items-center gap-4">
+              <span className="text-xs text-[#71717a] font-medium">Active: {session.user.email}</span>
+              <a href="/dashboard" className="text-xs text-black font-bold hover:opacity-75 transition-opacity">Dashboard</a>
+              <button
+                onClick={handleSignOut}
+                className="h-9 px-4 text-xs border border-black hover:bg-black/5 text-black font-bold rounded-sm transition-colors cursor-pointer"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <a href="/login" className="h-9 px-4 text-xs bg-black text-white font-bold rounded-sm hover:bg-neutral-800 transition-colors cursor-pointer flex items-center justify-center">
+              Portal Log In
+            </a>
+          )}
         </nav>
       </header>
 

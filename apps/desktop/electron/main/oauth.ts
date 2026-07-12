@@ -1,6 +1,6 @@
 import * as http from 'http'
 import { shell } from 'electron'
-import { auth } from '@papsoft/auth'
+import { auth, getSupabaseClient } from '@papsoft/auth'
 
 let localServer: http.Server | null = null
 
@@ -10,10 +10,67 @@ export function handleGoogleSignIn(onSuccess: (session: any) => void, onFailure:
   }
 
   localServer = http.createServer(async (req, res) => {
+    // Add CORS headers for the website's probe/fetch ping
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204)
+      res.end()
+      return
+    }
+
     const url = new URL(req.url || '', 'http://localhost:5678')
 
+    // Root status endpoint for the web check/probe
+    if (url.pathname === '/') {
+      res.writeHead(200, { 'Content-Type': 'text/plain' })
+      res.end('PAPSoft Local OAuth Receiver Active')
+      return
+    }
+
     if (url.pathname === '/callback') {
-      // Return HTML that extracts hash fragment and redirects to /token with query params
+      const code = url.searchParams.get('code')
+      if (code) {
+        // PKCE Flow: exchange the authorization code for a session
+        try {
+          const client = getSupabaseClient()
+          const { data, error } = await client.auth.exchangeCodeForSession(code)
+          if (error) throw error
+
+          res.writeHead(200, { 'Content-Type': 'text/html' })
+          res.end(`
+            <!DOCTYPE html>
+            <html>
+            <head><title>Logged In</title></head>
+            <body style="font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #fafafa; color: #09090b;">
+              <div style="text-align: center; border: 1px solid #e4e4e7; padding: 2rem; background: white; border-radius: 8px;">
+                <h3 style="color: #10b981; margin: 0 0 10px 0;">Logged In Successfully!</h3>
+                <p style="color: #71717a; font-size: 13px;">You can now close this browser tab and return to PAPSoft ERP.</p>
+              </div>
+              <script>
+                setTimeout(() => window.close(), 3000);
+              </script>
+            </body>
+            </html>
+          `)
+
+          onSuccess(data.session)
+        } catch (err: any) {
+          res.writeHead(500, { 'Content-Type': 'text/plain' })
+          res.end(`Failed to exchange authorization code: ${err.message}`)
+          onFailure(err)
+        } finally {
+          if (localServer) {
+            localServer.close()
+            localServer = null
+          }
+        }
+        return
+      }
+
+      // Implicit Flow Fallback (Hash fragments)
       res.writeHead(200, { 'Content-Type': 'text/html' })
       res.end(`
         <!DOCTYPE html>
