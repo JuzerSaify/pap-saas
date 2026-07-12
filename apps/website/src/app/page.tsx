@@ -11,6 +11,8 @@ const supabase = createClient(
 export default function LandingPage() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
+  const [downloadLoading, setDownloadLoading] = useState(true)
 
   useEffect(() => {
     // Handle Supabase implicit OAuth callback via hash fragment (e.g. /#access_token=...)
@@ -30,6 +32,18 @@ export default function LandingPage() {
       setSession(session)
       setLoading(false)
     })
+
+    // Fetch latest release .exe asset in background
+    fetch('https://api.github.com/repos/JuzerSaify/pap-saas/releases/latest')
+      .then(r => r.json())
+      .then(data => {
+        const exe = data.assets?.find((a: any) =>
+          a.name.endsWith('.exe') || a.name.endsWith('.msi')
+        )
+        if (exe) setDownloadUrl(exe.browser_download_url)
+      })
+      .catch(() => {})
+      .finally(() => setDownloadLoading(false))
 
     return () => subscription.unsubscribe()
   }, [])
@@ -101,12 +115,31 @@ export default function LandingPage() {
           <span className="text-[10px] text-[#71717a]">Free during beta · No credit card required</span>
         </div>
         <div className="mt-8 flex gap-3">
-          <a
-            href="https://github.com/JuzerSaify/pap-saas/releases"
-            className="h-10 px-6 text-xs bg-black text-white font-bold rounded-md hover:bg-neutral-800 transition-all cursor-pointer flex items-center justify-center"
+          <button
+            onClick={() => {
+              if (downloadUrl) {
+                const a = document.createElement('a')
+                a.href = downloadUrl
+                a.setAttribute('download', '')
+                document.body.appendChild(a)
+                a.click()
+                document.body.removeChild(a)
+              } else {
+                window.open('https://github.com/JuzerSaify/pap-saas/releases', '_blank')
+              }
+            }}
+            disabled={downloadLoading}
+            className="h-10 px-6 text-xs bg-black text-white font-bold rounded-md hover:bg-neutral-800 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Download App
-          </a>
+            {downloadLoading ? (
+              <>
+                <span className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
+                Checking...
+              </>
+            ) : (
+              'Download for Windows'
+            )}
+          </button>
         </div>
       </main>
 
