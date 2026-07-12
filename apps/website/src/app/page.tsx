@@ -11,10 +11,16 @@ const supabase = createClient(
 export default function LandingPage() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const [downloadUrl, setDownloadUrl] = useState<string>('https://github.com/JuzerSaify/pap-saas/releases')
-  const [latestTag, setLatestTag] = useState<string>('')
 
   useEffect(() => {
+    // Handle Supabase implicit OAuth callback via hash fragment (e.g. /#access_token=...)
+    const hash = window.location.hash.substring(1)
+    if (hash && hash.includes('access_token')) {
+      // Redirect to auth/callback page which properly handles the hash relay
+      window.location.href = '/auth/callback' + window.location.hash
+      return
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setLoading(false)
@@ -25,20 +31,6 @@ export default function LandingPage() {
       setLoading(false)
     })
 
-    // Fetch latest release info
-    fetch('https://api.github.com/repos/JuzerSaify/pap-saas/releases/latest')
-      .then(res => res.json())
-      .then(data => {
-        if (data.tag_name) {
-          setLatestTag(data.tag_name)
-          const exe = data.assets?.find((asset: any) => asset.name.endsWith('.exe'))
-          if (exe) {
-            setDownloadUrl(exe.browser_download_url)
-          }
-        }
-      })
-      .catch(err => console.error('Failed to get latest release info', err))
-
     return () => subscription.unsubscribe()
   }, [])
 
@@ -48,15 +40,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div 
-      className="min-h-screen bg-white text-[#09090b] flex flex-col justify-between"
-      style={{
-        backgroundImage: `
-          radial-gradient(at top, rgba(84, 224, 231, 0.25) 0%, rgba(224, 251, 253, 0.08) 50%, rgba(255, 255, 255, 0) 100%),
-          url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E")
-        `,
-      }}
-    >
+    <div className="min-h-screen bg-white text-[#09090b] flex flex-col justify-between">
       {/* Header Navigation */}
       <header className="h-20 bg-transparent flex items-center justify-between px-8 w-full z-10">
         <span className="font-bold text-sm tracking-wider uppercase text-black">PAPSoft SaaS</span>
@@ -96,14 +80,11 @@ export default function LandingPage() {
         </p>
         <div className="mt-8 flex gap-3">
           <a
-            href={downloadUrl}
-            className="h-10 px-6 text-xs bg-black text-white font-bold rounded-md hover:bg-neutral-800 transition-all cursor-pointer flex items-center justify-center shadow-md shadow-neutral-200"
+            href="https://github.com/JuzerSaify/pap-saas/releases"
+            className="h-10 px-6 text-xs bg-black text-white font-bold rounded-md hover:bg-neutral-800 transition-all cursor-pointer flex items-center justify-center"
           >
-            Download App {latestTag ? `(${latestTag})` : ''}
+            Download App
           </a>
-          <button className="h-10 px-6 text-xs border border-black bg-transparent text-black font-bold rounded-md hover:bg-black/5 transition-all cursor-pointer">
-            Talk to Sales
-          </button>
         </div>
       </main>
 

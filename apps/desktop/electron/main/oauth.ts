@@ -152,7 +152,10 @@ export function handleGoogleSignIn(onSuccess: (session: any) => void, onFailure:
 
   localServer.listen(5678, async () => {
     try {
-      const { data, error } = await auth.signInWithGoogle('http://localhost:5678/callback')
+      // Use the website callback as redirectTo — Supabase requires an HTTPS whitelisted URL.
+      // The website's /auth/callback page detects if the local Electron server is running
+      // and relays the tokens/code back to localhost:5678 to complete auth in the desktop app.
+      const { data, error } = await auth.signInWithGoogle('https://pap-saas.vercel.app/auth/callback')
       if (error) throw error
       if (data?.url) {
         // Open OAuth URL in external default browser
